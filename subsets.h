@@ -1,83 +1,107 @@
 #pragma once
 #include <stdlib.h>
+#include "Util.h"
 
-unsigned int choose(unsigned int n, unsigned int k){
-    if (k > n)
-        return 0;
-    if (k * 2 > n)
-        k = n-k;
-    if (k == 0)
-        return 1;
-    int result = n;
-    for (int i = 2; i <= k; ++i){
-        result *= (n-i+1);
-        result /= i;
+
+
+unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
+    unsigned int num_ones = 0;
+    for(unsigned int i = 0; i < size; ++i){
+        if (terminals[i])
+            num_ones++;
+    }
+    
+    unsigned int numSubsets = (1 << num_ones) - 1;
+    unsigned int* result = (unsigned int*) calloc(numSubsets * size, sizeof(unsigned int));
+
+    unsigned int decimalVal = binaryToDecimal(terminals, size);
+    unsigned int decimalSubsets[numSubsets];
+    unsigned int currSubset = 0;
+    for(unsigned int s = decimalVal; s; s = (s - 1) & decimalVal){
+        unsigned int* subset = decimalToBinary(s, size);
+        for(unsigned int i = 0; i < size; ++i){
+            result[currSubset * size + i] = subset[i];
+        }
+        currSubset++;
+        free(subset);
     }
     return result;
 }
-//TODO
-unsigned int* subsetsK(unsigned int* set,unsigned int N, unsigned int k, unsigned int num_ones, unsigned int* num_subsets) {
-    unsigned int size = choose(num_ones, k);
-    unsigned int* result = (unsigned int*) malloc(size * sizeof(unsigned int));
-    for(unsigned int i = 0; i < size; ++i){
-        if (set[i]) {
-            unsigned int indices[k];
-            indices[0] = i;
-            unsigned int currNodes = 1;
-            for(unsigned int j = i + 1; j < N; ++j){
-                if (set[j]) {
-                    indices[currNodes] = j;
-                    ++currNodes;
-                }
-                if (currNodes == k)
-                    break;
-            }
 
-        }
+unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
+    unsigned int* allSubsets = generateSubsets(set, size);
+    
+    unsigned int num_ones = 0;
+    unsigned int currSubset = 0;
+    for(unsigned int i = 0; i < size; ++i){
+        if (set[i])
+            num_ones++;
     }
-}
-
-unsigned int* subsets(unsigned int* terminals, unsigned int numOnes, unsigned int size){
-    int numSubsets = (1 >> num) - 1;
-
-    unsigned int* result = (unsigned int*) calloc(numSubsets, sizeof(unsigned int));
-    //first subset is the set itself
-    for(int i = 0; i < size; ++i)
-        result[i] = terminals[i];
     
-    unsigned int currSubset = 1;
+    unsigned int numSubsets = choose(num_ones, k);
+    unsigned int* result = (unsigned int*) malloc(numSubsets * size * sizeof(unsigned int));
     
-    for(unsigned int i = 0; i < size; ++i){
-        if (terminals[i]) {
-            terminals[i] = 0;
-
-            for(unsigned int j = 0; j < size; ++j){
-                result[currSubset * size + j] = terminals[j];
-            }
+    for(unsigned int i = 0; i < (1 << num_ones) - 1; ++i){
+        
+        unsigned int curr_num_ones = 0;
+        for (unsigned int j = 0; j < size; ++j)
+            if (allSubsets[i * size + j])
+                curr_num_ones++;
+            
+        if (curr_num_ones == k) {
+            for (unsigned int j = 0; j < size; ++j)
+                result[currSubset * size + j] = allSubsets[i * size + j];
             currSubset++;
-
-            for(unsigned int j = i + 1; j < size; ++j) {
-                if (terminals[j]) {
-                    terminals[j] = 0;
-                    for(unsigned int k = 0; k < size; ++k){
-                        result[currSubset * size + k] = terminals[k];
-                    }
-                    currSubset++;
-                    terminals[j] = 1;
-                }
-            }
-            terminals[i] = 1;
         }
     }
+    free(allSubsets);
     return result;
 }
 
 
-int main(int argc, char**argv) {
 
-    int terminals[] = {0,1,1};
-    subsets(*terminals,3);
+unsigned int* getSortedSubsets(unsigned int size) {
+    unsigned int terminals[size];
+
+    unsigned int* result = (unsigned int*) calloc( ( (1 << size) - 1) * size, sizeof(unsigned int));
+    
+    for (unsigned int i = 0; i < size; ++i) {
+        terminals[i] = 1;
+    }
+    unsigned int currSubset = 0;
+    for(unsigned int k = 1; k <= size; ++k) {
+        unsigned int subsetNum = choose(size, k);
+        unsigned int* subsets = subsetK(terminals, k, size);
+        
+        for(unsigned int i = 0; i < (subsetNum * size); ++i) {
+            result[currSubset * size + i] = subsets[i];
+        }
+        currSubset += subsetNum;
+        free(subsets);
+    }
+    return result;
 }
-//011
-//001
-//010
+
+unsigned int getSubsetIndex(unsigned int* set, unsigned int size, unsigned int* allSubsets){
+
+    unsigned int num_ones = 0;
+    for(unsigned int i = 0; i < size; ++i){
+        if (set[i])
+            num_ones++;
+    }
+    unsigned int num_subsets = (1 << size) - 1;
+    unsigned int start = 0;
+    for(unsigned int i = 0; i < num_ones; ++i){
+        start += choose(size, i);
+    }
+    for(unsigned int i = start - 1; i < num_subsets; ++i){
+        for(unsigned int j = 0; j < size; ++j){
+
+            if (set[j] != allSubsets[i * size + j])
+                break;
+            if (j == size - 1)
+                return i;
+        }
+    }
+    return -1;
+}
