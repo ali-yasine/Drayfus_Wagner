@@ -34,7 +34,6 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
             curr_Subset++;
         }
     }
-    curr_Subset += numTerminals;
     //loop over subset sizes
     for(unsigned int k = 2; k < numTerminals; ++k) {
         unsigned int numSubsets = choose(numTerminals, k);
