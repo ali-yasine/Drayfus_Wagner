@@ -13,15 +13,17 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
     //handle singletons TODO
 
     unsigned int* allSubsets = getSortedSubsets(numTerminals);
-
+    unsigned int totalSubsets = (1 << numTerminals) - 1;
+    unsigned int curr_Subset = 0;
+    
     //loop over subset sizes
     for(unsigned int k = 2; k < numTerminals; ++k) {
         unsigned int numSubsets = choose(numTerminals, k);
         
         //loop over subsets
-        for (unsigned int subset = 0; subset < numSubsets; ++subset ) {
+        for (unsigned int subset = currSubset; subset < currSubset + numSubsets; ++subset ) {
 
-            unsigned int* currSubset = subsets + (subset * numTerminals);
+            unsigned int* currSubset = allSubsets + (subset * numTerminals);
 
             unsigned int s_index = getSubsetIndex(currSubset, numTerminals, allSubsets);
 
@@ -46,14 +48,15 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
 
                     for(unsigned int vertex = 0; vertex < graph.num_nodes; ++vertex){
                         // DP[r, s] min= DP[v, ss] + DP[v, s / ss] + dist(r, v)
-                        unsigned int sum = (DP[vertex * numSubsets + ss_index] + DP[vertex * numSubsets + sMinusSS_index] + apsp[root * graph.num_nodes + vertex]; 
-                        if (sum < DP[root * numSubsets + s_index]){
-                            DP[root * numSubsets + s_index] = sum;
-                        }
+                        unsigned int sum = (DP[vertex * totalSubsets + ss_index] + DP[vertex * allSubsets + sMinusSS_index] + apsp[root * graph.num_nodes + vertex]; 
+
+                        if (sum < DP[root * allSubsets + s_index])
+                            DP[root * allSubsets + s_index] = sum;
                     }
                 }
             }
         }
+        currSubset += numSubsets;
     }
     free(apsp);
     free(allSubsets);
