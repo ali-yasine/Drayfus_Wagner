@@ -10,12 +10,31 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
     unsigned int* apsp = floydWarshall(graph);
 
     unsigned int* DP = (unsigned int* ) calloc(graph.num_nodes * ( (1 << numTerminals) - 1), sizeof(unsigned int));
-    //handle singletons TODO
-
+    
     unsigned int* allSubsets = getSortedSubsets(numTerminals);
     unsigned int totalSubsets = (1 << numTerminals) - 1;
     unsigned int curr_Subset = 0;
-    
+
+    //handle singletons 
+    for(unsigned int vertex = 0; vertex < graph.num_nodes; ++vertex){
+        for(unsigned int* subset = allSubsets; subset < allSubsets numTerminals; ++subset){
+            //find index of 1 in subset
+            unsigned int index = 0;
+            for(unsigned int i = 0; i < numTerminals; ++i){
+                if (subset[i]){
+                    index = i;
+                    break;
+                }
+            }
+            if (terminals[index] == vertex) {
+                DP[vertex * totalSubsets + subset] = 0;
+            } else {
+                DP[vertex * totalSubsets + curr_Subset] = apsp[vertex * graph.num_nodes + terminals[index]];
+            }
+            curr_Subset++;
+        }
+    }
+    curr_Subset += numTerminals;
     //loop over subset sizes
     for(unsigned int k = 2; k < numTerminals; ++k) {
         unsigned int numSubsets = choose(numTerminals, k);
@@ -46,12 +65,15 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
 
                     unsigned int sMinusSS_index = getSubsetIndex(sMinusSS, numTerminals, allSubsets);
 
+                    unsigned int cost = DP[root * totalSubsets + s_index];
                     for(unsigned int vertex = 0; vertex < graph.num_nodes; ++vertex){
                         // DP[r, s] min= DP[v, ss] + DP[v, s / ss] + dist(r, v)
-                        unsigned int sum = (DP[vertex * totalSubsets + ss_index] + DP[vertex * allSubsets + sMinusSS_index] + apsp[root * graph.num_nodes + vertex]; 
+                        unsigned int sum = (DP[vertex * totalSubsets + ss_index] + DP[vertex * totalSubsets + sMinusSS_index] + apsp[root * graph.num_nodes + vertex]; 
 
-                        if (sum < DP[root * allSubsets + s_index])
-                            DP[root * allSubsets + s_index] = sum;
+                        if (sum < cost){
+                            DP[root * totalSubsets + s_index] = sum;
+                            cost = sum;
+                        }
                     }
                 }
             }
