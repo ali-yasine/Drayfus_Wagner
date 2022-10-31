@@ -85,15 +85,19 @@ unsigned int* getSortedSubsets(unsigned int size) {
 unsigned int getSubsetIndex(unsigned int* set, unsigned int size, unsigned int* allSubsets){
 
     unsigned int num_ones = 0;
+
     for(unsigned int i = 0; i < size; ++i){
         if (set[i])
             num_ones++;
     }
+
     unsigned int num_subsets = (1 << size) - 1;
     unsigned int start = 0;
+    
     for(unsigned int i = 0; i < num_ones; ++i){
         start += choose(size, i);
     }
+
     for(unsigned int i = start - 1; i < num_subsets; ++i){
         for(unsigned int j = 0; j < size; ++j){
 
