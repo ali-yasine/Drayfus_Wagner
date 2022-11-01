@@ -36,11 +36,7 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
                     break;
                 }
             }
-            if (terminals[index] == vertex) {
-                DP[vertex * totalSubsets + curr_Subset] = 0;
-            } else {
-                DP[vertex * totalSubsets + curr_Subset] = apsp[vertex * graph.num_nodes + terminals[index]];
-            }
+            DP[vertex * totalSubsets + curr_Subset] = apsp[vertex * graph.num_nodes + terminalMap[index]];
             curr_Subset++;
         }
     }
@@ -49,14 +45,13 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
         unsigned int numSubsets = choose(numTerminals, k);
         
         //loop over subsets
-        for (unsigned int subset = curr_Subset; subset < curr_Subset + numSubsets; ++subset ) {
+        for (unsigned int subset = curr_Subset; subset <= curr_Subset + numSubsets ; ++subset ) {
             unsigned int* currSubset = allSubsets + (subset * numTerminals);
             
             //unsigned int s_index = getSubsetIndex(currSubset, numTerminals, allSubsets);
             unsigned int s_index = subset;
             
             for (unsigned int root = 0; root < graph.num_nodes; ++root) {
-                if (! contains(terminalMap, numTerminals, root)) { 
 
                     unsigned int num_sub_subsets = (1 << k) - 1;
 
@@ -90,7 +85,6 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
                             }
                         }
                     }
-                }
             }
         }
         curr_Subset += numSubsets;
