@@ -5,7 +5,7 @@
 #include "Util.h"
 #include <iostream>
 #include <limits.h>
-//TODO add frees to handle memory leaks
+
 unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned int numTerminals, unsigned int* terminalMap) {
     unsigned int* apsp = floydWarshall(graph);
     
@@ -75,11 +75,17 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
                             unsigned int cost = DP[root * totalSubsets + s_index];
                             for(unsigned int vertex = 0; vertex < graph.num_nodes; ++vertex){
                                 // DP[r, s] min= DP[v, ss] + DP[v, s / ss] + dist(r, v)
-                                unsigned int sum = DP[vertex * totalSubsets + ss_index] + DP[vertex * totalSubsets + sMinusSS_index] + apsp[root * graph.num_nodes + vertex]; 
 
-                                if (sum < cost){
-                                    DP[root * totalSubsets + s_index] = sum;
-                                    cost = sum;
+                                unsigned int v_to_sub_Subset = DP[vertex * totalSubsets + ss_index];
+                                unsigned int v_S_minusSS = DP[vertex * totalSubsets + sMinusSS_index]; 
+                                unsigned int root_to_V = apsp[root * graph.num_nodes + vertex]; 
+
+                                if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_V != UINT_MAX) {
+                                    unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_V;
+                                    if (sum < cost) {
+                                        DP[root * totalSubsets + s_index] = sum;
+                                        cost = sum;
+                                    }
                                 }
                             }
                         }
