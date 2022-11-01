@@ -49,3 +49,11 @@ bool contains(unsigned int* set, unsigned int N, unsigned int vertex) {
     }
     return false;
 }
+
+bool equals(unsigned int* set1, unsigned int* set2, unsigned int size) {
+    for (unsigned int i = 0; i < size; ++i) {
+        if (set1[i] != set2[i])
+            return false;
+    }
+    return true;
+}
