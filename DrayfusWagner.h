@@ -4,7 +4,7 @@
 #include "subsets.h"
 #include "Util.h"
 #include <iostream>
-
+#include <limits.h>
 //TODO add frees to handle memory leaks
 unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned int numTerminals, unsigned int* terminalMap) {
     unsigned int* apsp = floydWarshall(graph);
@@ -20,7 +20,7 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
     //init DP to INF
     for(unsigned int i = 0; i < graph.num_nodes; ++i){
         for(unsigned int j = 0; j < totalSubsets; ++j){
-            DP[i * totalSubsets + j] = INF;
+            DP[i * totalSubsets + j] = UINT_MAX;
         }
     }
 

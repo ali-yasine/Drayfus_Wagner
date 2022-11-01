@@ -1,6 +1,7 @@
 #pragma once
 #include "csr.h"
-#include <stdlib.h>
+#include <limits.h>
+#include <iostream>
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
@@ -11,12 +12,15 @@
 
 unsigned int* floydWarshall(CsrGraph graph){
     unsigned int* d = (unsigned int*) malloc(graph.num_nodes * graph.num_nodes * sizeof(unsigned int));
-
-    for (int i = 0; i < graph.num_nodes; ++i){
-        for (int j = 0; j < graph.num_nodes; ++j){
-            d[i * graph.num_nodes + j] = getEdgeWeight(graph, i, j);
+    for (unsigned int i = 0; i < graph.num_nodes; ++i){
+        for (unsigned int j = 0; j < graph.num_nodes; ++j){
+            if (i == j)
+                d[i * graph.num_nodes + j] = 0;
+            else
+                d[i * graph.num_nodes + j] = getEdgeWeight(graph, i, j);
         }
     }
+
 
     for(unsigned int k = 0; k < graph.num_nodes; ++k){
 
@@ -24,9 +28,11 @@ unsigned int* floydWarshall(CsrGraph graph){
 
             for(unsigned int j = 0; j < graph.num_nodes; ++j) {
 
-                unsigned int newerWeight = d[i * graph.num_nodes + k] + d[k * graph.num_nodes + j];
-                if (newerWeight < d[i * graph.num_nodes + j]){
-                    d[i * graph.num_nodes + j] = newerWeight;
+                unsigned int dist_i_k = d[i * graph.num_nodes + k];
+                unsigned int dist_k_j = d[k * graph.num_nodes + j];
+                
+                if (dist_i_k != UINT_MAX && dist_k_j != UINT_MAX && d[i * graph.num_nodes + j] > dist_i_k + dist_k_j ){
+                    d[i * graph.num_nodes + j] = dist_i_k + dist_k_j;
                 }
                 
             }

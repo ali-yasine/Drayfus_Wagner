@@ -1,5 +1,6 @@
 #pragma once
-#define INF 0xFFFFFFFF;
+#include <limits.h>
+
 struct CsrGraph {
     unsigned int num_nodes;
     unsigned int num_edges;
@@ -16,5 +17,5 @@ unsigned int getEdgeWeight(CsrGraph graph, int src, int dst) {
         if(graph.col_indices[i] == dst)
             return graph.edge_weights[i];
     }
-    return INF; 
+    return UINT_MAX; 
 }
