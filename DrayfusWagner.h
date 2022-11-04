@@ -1,4 +1,5 @@
 #pragma once 
+
 #include "csr.h"
 #include "floydWarshall.h"
 #include "subsets.h"
@@ -6,9 +7,9 @@
 #include <iostream>
 #include <limits.h>
 
-unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned int numTerminals, unsigned int* terminalMap) {
+unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsigned int* terminalMap, unsigned int* apsp) {
+    
 
-    unsigned int* apsp = floydWarshall(graph);
 
     unsigned int total_subset_count = (1 << numTerminals) - 1;
 

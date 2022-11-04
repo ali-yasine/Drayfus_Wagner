@@ -9,7 +9,7 @@ struct CsrGraph {
     unsigned int* edge_weights;
 };
 
-unsigned int getEdgeWeight(CsrGraph graph, int src, int dst) {
+__device__ __host__ unsigned int getEdgeWeight(CsrGraph graph, int src, int dst) {
     if (src == dst) 
         return 0;
     

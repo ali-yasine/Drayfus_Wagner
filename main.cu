@@ -1,10 +1,16 @@
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "DrayfusWagner.h"
-#include <chrono>
-#include <iostream>
-using namespace std;
-using namespace chrono;
+#include "csr.h"
+#include "timer.h"
 
 int main() {
+    cudaDeviceSynchronize();
+    setbuf(stdout, NULL);
+
 
     //Testing on a graph of 10 vertices
     unsigned int numberOfVertices = 7;   
@@ -14,7 +20,6 @@ int main() {
     unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 14, 16, 18};
     unsigned int numberOfTerminals = 3;
     unsigned int terminals[] {2, 3, 5};
-    unsigned int bitTerminals[] {1,1,1};
 
     // Testing on a graph of 20 vertices
     // unsigned int numberOfVertices = 20;   
@@ -32,19 +37,51 @@ int main() {
         col,
         values
     };
+    //TODO 
+    // printf("Reading graph from file: %s\n", matrixFile);
+    // CsrGraph* graph = CSRfromFile(matrixFile);
+    // printf("Graph read from file: %s\n", matrixFile);
 
-    //start
-    auto start = high_resolution_clock::now();
-    unsigned int* result = DrayfusWagner(graph, bitTerminals, numberOfTerminals, terminals);
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
-    cout << "Time taken by function with " << numberOfVertices <<" vertices: "<< duration.count() << " nanoseconds" << endl;
+    Timer timer;
+    startTime(&timer);
+    printf("Computing Floyd-Warshall...\n");
+    unsigned int* apsp = floydWarshall(graph);
+    stopTime(&timer);
+    printElapsedTime(timer, "    Floyd-Warshall");
 
-    cout << "Result: " << endl;
-    for (unsigned int root = 0; root < numberOfVertices; root++) {
-        for (unsigned int subset = 0; subset < (1 << numberOfTerminals) - 1; subset++) {
-            cout << result[root * ( (1 << numberOfTerminals) - 1 ) + subset] << "\t";
-        }
-        cout << endl;
+    printf("Running CPU version\n")
+    unsigned int* cpuResult = DrayfusWagnerCPU(graph, numberOfTerminals, terminals);
+    stopTime(&timer);
+    printElapsedTime(timer, "    CPU time", CYAN);
+
+    printf("Running GPU version\n")
+
+
+    // Allocate GPU memory
+    startTime(&timer);
+    CsrGraph* graph_d = createEmptyCSRGraphOnGPU(graph.num_nodes, graph.num_edges);
+    stopTime(&timer);
+    printElapsedTime(timer, "  GPU allocation time");
+
+    // Copy graph to GPU
+    startTime(&timer);
+    
+    copyCSRGraphToGPU(&graph, graph_d);
+    cudaDeviceSynchronize();
+
+    stopTime(&timer);
+    printElapsedTime(timer, "  GPU copy time");
+
+    unsigned int* DP = (unsigned int*) malloc(sizeof(unsigned int) * graph.num_nodes *  ((1 << numberOfTerminals) - 1) );
+    
+    for(int i = 0; i < graph.num_nodes *  ((1 << numberOfTerminals) - 1); i++) {
+        DP[i] = UINT_MAX;
     }
+    
+    startTime(&timer);
+    DrayfusWagnerGPU(graph_d, numberOfTerminals, terminals, DP, apsp);
+    stopTime(&timer);
+
+    printElapsedTime(timer, "  GPU Kernel time", CYAN);
+    
 }

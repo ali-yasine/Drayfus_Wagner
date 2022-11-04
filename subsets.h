@@ -4,7 +4,7 @@
 
 
 
-unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
+__device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
     unsigned int num_ones = 0;
     for(unsigned int i = 0; i < size; ++i){
         if (terminals[i])
@@ -28,7 +28,7 @@ unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
     return result;
 }
 
-unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
+__device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
     unsigned int* allSubsets = generateSubsets(set, size);
     
     unsigned int num_ones = 0;
@@ -60,7 +60,7 @@ unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
 
 
 
-unsigned int* getSortedSubsets(unsigned int size) {
+__device__ __host__ unsigned int* getSortedSubsets(unsigned int size) {
     unsigned int terminals[size];
 
     unsigned int* result = (unsigned int*) calloc( ( (1 << size) - 1) * size, sizeof(unsigned int));
@@ -82,7 +82,7 @@ unsigned int* getSortedSubsets(unsigned int size) {
     return result;
 }
 
-unsigned int getSubsetIndex(unsigned int* set, unsigned int size, unsigned int* allSubsets){
+__device__ __host__ unsigned int getSubsetIndex(unsigned int* set, unsigned int size, unsigned int* allSubsets){
 
     unsigned int num_ones = 0;
 
