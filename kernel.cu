@@ -39,7 +39,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
     for(unsigned int sub_sub_set = threadIdx.x * coarseFactor; sub_sub_set < threadIdx.x * coarseFactor + coarseFactor; ++sub_sub_set) {
         if (sub_sub_set <= num_sub_subsets) {
-            unsigned int* subSubset = sub_sub_set + (sub_sub_set * numTerminals);
+            unsigned int* subSubset = subSubets + (sub_sub_set * numTerminals);
             if (!equals(subset, subSubset, numTerminals)) {
 
                 unsigned int ss_index = getSubsetIndex(subSubset, numTerminals, allSubsets);
@@ -57,7 +57,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
                         unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
                         
-                        atomicMin(& DP[root * numSubsets + subset], sum);
+                        atomicMin(& DP[root * numSubsets + blockIdx.y], sum);
                     }   
                 }
             }
