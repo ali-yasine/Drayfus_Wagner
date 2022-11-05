@@ -11,7 +11,7 @@ unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
             num_ones++;
     }
     
-    unsigned int numSubsets = (1 << num_ones) - 1;
+    unsigned int const numSubsets = (1 << num_ones) - 1;
     unsigned int* result = (unsigned int*) calloc(numSubsets * size, sizeof(unsigned int));
 
     unsigned int decimalVal = binaryToDecimal(terminals, size);
