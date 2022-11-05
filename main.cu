@@ -14,7 +14,6 @@ int main() {
 
     //Testing on a graph of 10 vertices
     unsigned int numberOfVertices = 7;   
-    unsigned int numberOfTeriminals = 3;
     unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 7, 1, 6, 1};
     unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 2, 4, 3, 4};
     unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 14, 16, 18};
@@ -49,12 +48,12 @@ int main() {
     stopTime(&timer);
     printElapsedTime(timer, "    Floyd-Warshall");
 
-    printf("Running CPU version\n")
+    printf("Running CPU version\n");
     unsigned int* cpuResult = DrayfusWagnerCPU(graph, numberOfTerminals, terminals);
     stopTime(&timer);
     printElapsedTime(timer, "    CPU time", CYAN);
 
-    printf("Running GPU version\n")
+    printf("Running GPU version\n");
 
 
     // Allocate GPU memory

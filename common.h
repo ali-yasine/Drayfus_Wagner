@@ -8,4 +8,4 @@ void freeCSRGraphOnGPU(CsrGraph* graph);
 
 void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP);
 
-void copyCSRMatrixToGPU(CSRMatrix* csrMatrix_h, CSRMatrix* csrMatrix_d);
+void copyCSRGraphToGPU(CsrGraph* graph, CsrGraph* graph_d);
