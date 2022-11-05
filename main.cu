@@ -49,7 +49,7 @@ int main() {
     printElapsedTime(timer, "    Floyd-Warshall");
 
     printf("Running CPU version\n");
-    unsigned int* cpuResult = DrayfusWagnerCPU(graph, numberOfTerminals, terminals);
+    unsigned int* cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals);
     stopTime(&timer);
     printElapsedTime(timer, "    CPU time", CYAN);
 

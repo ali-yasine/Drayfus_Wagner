@@ -15,7 +15,7 @@ __device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsig
     unsigned int* result = (unsigned int*) calloc(numSubsets * size, sizeof(unsigned int));
 
     unsigned int decimalVal = binaryToDecimal(terminals, size);
-    unsigned int decimalSubsets = (unsigned int*) calloc(numSubsets, sizeof(unsigned int));
+    unsigned int* decimalSubsets = (unsigned int*) calloc(numSubsets, sizeof(unsigned int));
     unsigned int currSubset = 0;
     for(unsigned int s = decimalVal; s; s = (s - 1) & decimalVal){
         unsigned int* subset = decimalToBinary(s, size);
@@ -62,7 +62,7 @@ __device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, uns
 
 
 __device__ __host__ unsigned int* getSortedSubsets(unsigned int size) {
-    unsigned int terminals = (unsigned int*) calloc(size, sizeof(unsigned int));
+    unsigned int* terminals = (unsigned int*) calloc(size, sizeof(unsigned int));
 
     unsigned int* result = (unsigned int*) calloc( ( (1 << size) - 1) * size, sizeof(unsigned int));
     
