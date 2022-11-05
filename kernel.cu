@@ -1,7 +1,7 @@
 #include "Util.h"
 #include "csr.h"
 #include "common.h"
-#include "subset.h"
+#include "subsets.h"
 #define MAX_THREADS 1024
 
 void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
