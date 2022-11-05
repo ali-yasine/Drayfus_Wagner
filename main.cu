@@ -6,7 +6,7 @@
 #include "DrayfusWagner.h"
 #include "csr.h"
 #include "timer.h"
-
+#include "common.h"
 int main() {
     cudaDeviceSynchronize();
     setbuf(stdout, NULL);
