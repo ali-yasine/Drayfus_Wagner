@@ -49,12 +49,13 @@ int main() {
     printElapsedTime(timer, "    Floyd-Warshall");
 
     printf("Running CPU version\n");
+
     unsigned int* cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals, apsp);
+    
     stopTime(&timer);
     printElapsedTime(timer, "    CPU time", CYAN);
 
     printf("Running GPU version\n");
-
 
     // Allocate GPU memory
     startTime(&timer);

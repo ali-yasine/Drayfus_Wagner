@@ -55,7 +55,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
                     unsigned int v_S_minusSS = DP[vertex * numSubsets + sMinusSS_index]; 
                     unsigned int root_to_v = apsp[root * graph->num_nodes + vertex]; 
 
-                    if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_V != UINT_MAX) {
+                    if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_v != UINT_MAX) {
 
                         unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
                         

@@ -17,7 +17,6 @@ unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsig
     
     unsigned int* allSubsets = getSortedSubsets(numTerminals);
     
-
     //init DP to INF
     for(unsigned int i = 0; i < graph.num_nodes; ++i)
         for(unsigned int j = 0; j < total_subset_count; ++j)
