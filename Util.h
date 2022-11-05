@@ -11,7 +11,7 @@ __host__ __device__ unsigned int* decimalToBinary(unsigned int decimal, unsigned
     
     unsigned int* result;
 
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaMalloc(&result, binarySize * sizeof(unsigned int));
     #else
         result = (unsigned int*) calloc(binarySize, sizeof(unsigned int));
@@ -38,7 +38,7 @@ __device__ __host__ unsigned int choose(unsigned int n, unsigned int k){
 
 __device__ __host__ unsigned int* setDifference(unsigned int* set1, unsigned int* set2, unsigned int size){
     unsigned int* set1MinusSet2;
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaMalloc(&set1MinusSet2, size * sizeof(unsigned int));
     #else
     
