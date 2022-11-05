@@ -1,8 +1,8 @@
 
 NVCC        = nvcc
 NVCC_FLAGS  = -O3
-OBJ         = main.o matrix.o kernel0.o kernel1.o kernel2.o kernel3.o kernel4.o
-EXE         = spmspm
+OBJ         = main.o kernel.o cudaUtil.o
+EXE         = dw
 
 
 default: 	$(EXE)
