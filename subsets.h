@@ -15,7 +15,7 @@ __device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsig
     
     unsigned int numSubsets = (1 << num_ones) - 1;
 
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaMalloc(&result, numSubsets * size * sizeof(unsigned int));
         cudaMalloc(&decimalSubsets, numSubsets * sizeof(unsigned int));
     #else
@@ -32,13 +32,13 @@ __device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsig
             result[currSubset * size + i] = subset[i];
         }
         currSubset++;
-        #ifdef (__CUDA_ARCH__)
+        #if defined (__CUDA_ARCH__)
             cudaFree(subset);
         #else
             free(subset);
         #endif
     }
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaFree(decimalSubsets);
     #else
         free(decimalSubsets);
@@ -58,7 +58,7 @@ __device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, uns
     }
     
     unsigned int numSubsets = choose(num_ones, k);
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaMalloc(&result, numSubsets * size * sizeof(unsigned int));
     #else
         result = (unsigned int*) malloc(numSubsets * size * sizeof(unsigned int));
@@ -77,7 +77,7 @@ __device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, uns
             currSubset++;
         }
     }
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaFree(allSubsets);
     #else
         free(allSubsets);
@@ -92,7 +92,7 @@ __device__ __host__ unsigned int* getSortedSubsets(unsigned int size) {
     
     unsigned int* terminals, *result;
     
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
 
         cudaMalloc(&terminals, size * sizeof(unsigned int));
         cudaMalloc(&result, ((1 << size ) - 1) * size * sizeof(unsigned int));
@@ -117,13 +117,13 @@ __device__ __host__ unsigned int* getSortedSubsets(unsigned int size) {
             result[currSubset * size + i] = subsets[i];
         }
         currSubset += subsetNum;
-        #ifdef (__CUDA_ARCH__)
+        #if defined (__CUDA_ARCH__)
             cudaFree(subsets);
         #else
             free(subsets);
         #endif
     }
-    #ifdef (__CUDA_ARCH__)
+    #if defined (__CUDA_ARCH__)
         cudaFree(terminals);
     #else
         free(terminals);
