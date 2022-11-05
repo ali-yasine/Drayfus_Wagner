@@ -1,6 +1,7 @@
 #include "Util.h"
 #include "csr.h"
 #include "common.h"
+#include "subset.h"
 #define MAX_THREADS 1024
 
 void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
@@ -34,7 +35,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
     unsigned int* subSubets = generateSubsets(subset, num_sub_subsets);
 
     //try removing later
-    __synchthreads();
+    __syncthreads();
 
     unsigned int thread_subsets = threadIdx.x * coarseFactor;
 
@@ -69,14 +70,14 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 }
 
 
-void DrayfusWagnerGPU(CsrGraph* graph_d, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
+void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
 
     unsigned int* allSubsets = getSortedSubsets(numTerminals);;
 
     unsigned int* DP_d, *apsp_d, *allSubsets_d, *terminals_d;
     unsigned int numSubsets = (1 << numTerminals) - 1;
 
-    handleSingletons(DP, apsp, allSubsets, numTerminals, graph_d->num_nodes, terminals);
+    handleSingletons(DP, apsp, allSubsets, numTerminals, graph->num_nodes, terminals);
 
     //allocate memory 
     cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph.num_nodes * ((1 << numTerminals) - 1));

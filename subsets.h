@@ -6,16 +6,25 @@
 
 __device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
     unsigned int num_ones = 0;
+    unsigned int* result, *decimalSubsets;
+
     for(unsigned int i = 0; i < size; ++i){
         if (terminals[i])
             num_ones++;
     }
     
-    const unsigned int numSubsets = (1 << num_ones) - 1;
-    unsigned int* result = (unsigned int*) calloc(numSubsets * size, sizeof(unsigned int));
+    unsigned int numSubsets = (1 << num_ones) - 1;
+
+    #ifdef (__CUDA_ARCH__)
+        cudaMalloc(&result, numSubsets * size * sizeof(unsigned int));
+        cudaMalloc(&decimalSubsets, numSubsets * sizeof(unsigned int));
+    #else
+    
+        result = (unsigned int*) calloc(numSubsets * size, sizeof(unsigned int));
+        decimalSubsets = (unsigned int*) calloc(numSubsets, sizeof(unsigned int));
+    #endif
 
     unsigned int decimalVal = binaryToDecimal(terminals, size);
-    unsigned int* decimalSubsets = (unsigned int*) calloc(numSubsets, sizeof(unsigned int));
     unsigned int currSubset = 0;
     for(unsigned int s = decimalVal; s; s = (s - 1) & decimalVal){
         unsigned int* subset = decimalToBinary(s, size);
@@ -23,15 +32,24 @@ __device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsig
             result[currSubset * size + i] = subset[i];
         }
         currSubset++;
-        free(subset);
+        #ifdef (__CUDA_ARCH__)
+            cudaFree(subset);
+        #else
+            free(subset);
+        #endif
     }
-    free(decimalSubsets);
+    #ifdef (__CUDA_ARCH__)
+        cudaFree(decimalSubsets);
+    #else
+        free(decimalSubsets);
+    #endif
     return result;
 }
 
 __device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
     unsigned int* allSubsets = generateSubsets(set, size);
-    
+    unsigned int* result;
+
     unsigned int num_ones = 0;
     unsigned int currSubset = 0;
     for(unsigned int i = 0; i < size; ++i){
@@ -40,8 +58,12 @@ __device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, uns
     }
     
     unsigned int numSubsets = choose(num_ones, k);
-    unsigned int* result = (unsigned int*) malloc(numSubsets * size * sizeof(unsigned int));
-    
+    #ifdef (__CUDA_ARCH__)
+        cudaMalloc(&result, numSubsets * size * sizeof(unsigned int));
+    #else
+        result = (unsigned int*) malloc(numSubsets * size * sizeof(unsigned int));
+    #endif
+
     for(unsigned int i = 0; i < (1 << num_ones) - 1; ++i){
         
         unsigned int curr_num_ones = 0;
@@ -55,16 +77,33 @@ __device__ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, uns
             currSubset++;
         }
     }
-    free(allSubsets);
+    #ifdef (__CUDA_ARCH__)
+        cudaFree(allSubsets);
+    #else
+        free(allSubsets);
+    #endif
     return result;
 }
 
 
 
 __device__ __host__ unsigned int* getSortedSubsets(unsigned int size) {
-    unsigned int* terminals = (unsigned int*) calloc(size, sizeof(unsigned int));
+    
+    
+    unsigned int* terminals, *result;
+    
+    #ifdef (__CUDA_ARCH__)
 
-    unsigned int* result = (unsigned int*) calloc( ( (1 << size) - 1) * size, sizeof(unsigned int));
+        cudaMalloc(&terminals, size * sizeof(unsigned int));
+        cudaMalloc(&result, ((1 << size ) - 1) * size * sizeof(unsigned int));
+
+    #else
+    
+        terminals = (unsigned int*) calloc(size, sizeof(unsigned int));
+
+        result = (unsigned int*) calloc( ( (1 << size) - 1) * size, sizeof(unsigned int));
+    
+    #endif
     
     for (unsigned int i = 0; i < size; ++i) {
         terminals[i] = 1;
@@ -78,9 +117,18 @@ __device__ __host__ unsigned int* getSortedSubsets(unsigned int size) {
             result[currSubset * size + i] = subsets[i];
         }
         currSubset += subsetNum;
-        free(subsets);
+        #ifdef (__CUDA_ARCH__)
+            cudaFree(subsets);
+        #else
+            free(subsets);
+        #endif
     }
-    free(terminals);
+    #ifdef (__CUDA_ARCH__)
+        cudaFree(terminals);
+    #else
+        free(terminals);
+    #endif
+
     return result;
 }
 
