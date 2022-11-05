@@ -11,7 +11,7 @@ __device__ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsig
             num_ones++;
     }
     
-    unsigned int const numSubsets = (1 << num_ones) - 1;
+    const unsigned int  numSubsets = (1 << num_ones) - 1;
     unsigned int* result = (unsigned int*) calloc(numSubsets * size, sizeof(unsigned int));
 
     unsigned int decimalVal = binaryToDecimal(terminals, size);
