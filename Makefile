@@ -8,10 +8,11 @@ EXE         = dw
 default: 	$(EXE)
 
 %.o: %.cu
-	$(NVCC) $(NVCC_FLAGS) -dc -o $@ $<
+	$(NVCC) $(NVCC_FLAGS) -dc -rdc=true -o $@ $<
 
 $(EXE): $(OBJ)
 	$(NVCC) $(NVCC_FLAGS) $(OBJ) -o $(EXE)
 
 clean:
 	rm -rf $(OBJ) $(EXE)
+	
