@@ -78,7 +78,7 @@ void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* 
     handleSingletons(DP, apsp, allSubsets, numTerminals, graph->num_nodes, terminals);
 
     //allocate memory 
-    cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph->num_nodes * ((1 << numTerminals) - 1));
+    cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph->num_nodes * numSubsets);
     cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph->num_nodes * graph->num_nodes);
     cudaMalloc((void**) &allSubsets_d, sizeof(unsigned int) * numSubsets);
     cudaMalloc((void**) &terminals_d, sizeof(unsigned int) * numTerminals);
@@ -86,7 +86,7 @@ void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* 
     cudaDeviceSynchronize();
 
     //copy data to device
-    cudaMemcpy(DP_d, DP, sizeof(unsigned int) * graph->num_nodes * ((1 << numTerminals) - 1), cudaMemcpyHostToDevice);
+    cudaMemcpy(DP_d, DP, sizeof(unsigned int) * graph->num_nodes * numSubsets, cudaMemcpyHostToDevice);
     cudaMemcpy(apsp_d, apsp, sizeof(unsigned int) * graph->num_nodes * graph->num_nodes, cudaMemcpyHostToDevice);
     cudaMemcpy(allSubsets_d, allSubsets, sizeof(unsigned int) * numSubsets, cudaMemcpyHostToDevice);
     cudaMemcpy(terminals_d, terminals, sizeof(unsigned int) * numTerminals, cudaMemcpyHostToDevice);

@@ -71,12 +71,3 @@ __device__ __host__ bool equals(unsigned int* set1, unsigned int* set2, unsigned
     }
     return true;
 }
-
-__device__ __host__ void printMatrix(unsigned int* matrix, unsigned int rows, unsigned int cols) {
-    for (unsigned int i = 0; i < rows; ++i) {
-        for (unsigned int j = 0; j < cols; ++j) {
-            printf("%u\t", matrix[i * cols + j]);
-        }
-        printf("\n");
-    }
-}
