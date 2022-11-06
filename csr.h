@@ -7,15 +7,15 @@ struct CsrGraph {
     unsigned int* row_offsets;
     unsigned int* col_indices;
     unsigned int* edge_weights;
-};
 
-__device__ __host__ unsigned int getEdgeWeight(CsrGraph graph, int src, int dst) {
-    if (src == dst) 
-        return 0;
-    
-    for(unsigned int i = graph.row_offsets[src]; i < graph.row_offsets[src+1]; ++i){
-        if(graph.col_indices[i] == dst)
-            return graph.edge_weights[i];
+    unsigned int getEdgeWeight(unsigned int src, unsigned int dst) {
+        if (src == dst) 
+            return 0;
+        
+        for(unsigned int i = row_offsets[src]; i < row_offsets[src+1]; ++i)
+            if(col_indices[i] == dst)
+                return edge_weights[i];
+                
+        return UINT_MAX; 
     }
-    return UINT_MAX; 
-}
+};

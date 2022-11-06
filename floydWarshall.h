@@ -17,7 +17,7 @@ unsigned int* floydWarshall(CsrGraph graph){
             if (i == j)
                 d[i * graph.num_nodes + j] = 0;
             else
-                d[i * graph.num_nodes + j] = getEdgeWeight(graph, i, j);
+                d[i * graph.num_nodes + j] = graph.getEdgeWeight(i, j);
         }
     }
 
