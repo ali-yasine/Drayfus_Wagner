@@ -2,24 +2,28 @@
 
 #include <cstdlib>
 #include <stdio.h>
+#include <assert.h>
 
 CsrGraph* createEmptyCSRGraphOnGPU(unsigned int num_nodes, unsigned int num_edges) {
-    CsrGraph* graph_shadow;
-    graph_shadow->num_nodes = num_nodes;
-    graph_shadow->num_edges = num_edges;
-    cudaMalloc((void**) &graph_shadow->row_offsets, sizeof(unsigned int) * (num_nodes + 1));
-    cudaMalloc((void**) &graph_shadow->col_indices, sizeof(unsigned int) * num_edges);
-    cudaMalloc((void**) &graph_shadow->edge_weights, sizeof(unsigned int) * num_edges);
+
+    CsrGraph graph_shadow;
+    graph_shadow.num_nodes = num_nodes;
+    graph_shadow.num_edges = num_edges;
+    cudaMalloc((void**) &graph_shadow.row_offsets, sizeof(unsigned int) * (num_nodes + 1));
+    cudaMalloc((void**) &graph_shadow.col_indices, sizeof(unsigned int) * num_edges);
+    cudaMalloc((void**) &graph_shadow.edge_weights, sizeof(unsigned int) * num_edges);
 
     CsrGraph* graph;
 
     cudaMalloc((void**) &graph, sizeof(CsrGraph));
     cudaMemcpy(graph, &graph_shadow, sizeof(CsrGraph), cudaMemcpyHostToDevice);
 
+    cudaDeviceSynchronize();
     return graph;
 }
 
 void freeCSRGraphOnGPU(CsrGraph* graph) {
+    
     cudaFree(graph->row_offsets);
     cudaFree(graph->col_indices);
     cudaFree(graph->edge_weights);
