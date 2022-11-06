@@ -8,7 +8,7 @@ EXE         = dw
 default: 	$(EXE)
 
 %.o: %.cu
-	$(NVCC) $(NVCC_FLAGS) -c -o $@ $<
+	$(NVCC) $(NVCC_FLAGS) -dc -o $@ $<
 
 $(EXE): $(OBJ)
 	$(NVCC) $(NVCC_FLAGS) $(OBJ) -o $(EXE)
