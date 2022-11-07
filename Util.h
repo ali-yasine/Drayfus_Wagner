@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __UTIL_H_
+#define __UTIL_H_
 
 __host__ __device__ unsigned int binaryToDecimal(unsigned int* arr, unsigned int size) {
     unsigned int result = 0;
@@ -85,3 +86,4 @@ __device__ __host__ bool equals(unsigned int* set1, unsigned int* set2, unsigned
     }
     return true;
 }
+#endif
