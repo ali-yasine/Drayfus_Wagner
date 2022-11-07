@@ -72,7 +72,7 @@ int main() {
     stopTime(&timer);
     printElapsedTime(timer, "  GPU copy time");
 
-    unsigned int* DP = (unsigned int*) malloc(sizeof(unsigned int) * graph.num_nodes *  ((1 << numberOfTerminals) - 1) );
+    unsigned int* DP = (unsigned int*) calloc(sizeof(unsigned int) * graph.num_nodes *  ((1 << numberOfTerminals) - 1) );
     
     for(int i = 0; i < graph.num_nodes *  ((1 << numberOfTerminals) - 1); i++) {
         DP[i] = UINT_MAX;

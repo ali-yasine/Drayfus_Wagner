@@ -70,6 +70,9 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
 void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
 
+    cudaError_t err;
+
+
     unsigned int* allSubsets = getSortedSubsets(numTerminals);;
 
     unsigned int* DP_d, *apsp_d, *allSubsets_d, *terminals_d;
@@ -79,12 +82,35 @@ void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* 
 
     //allocate memory 
     cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph->num_nodes * numSubsets);
+    //get last error
+    err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        printf("Error after DP : %s\n", cudaGetErrorString(err));
+    }
+    cudaDeviceSynchronize();
     cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph->num_nodes * graph->num_nodes);
+    err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        printf("Error after apsp: %s\n", cudaGetErrorString(err));
+    }
+    cudaDeviceSynchronize();
+
     cudaMalloc((void**) &allSubsets_d, sizeof(unsigned int) * numSubsets);
+    err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        printf("Error after allSubsets: %s\n", cudaGetErrorString(err));
+    }
+    cudaDeviceSynchronize();
+
     cudaMalloc((void**) &terminals_d, sizeof(unsigned int) * numTerminals);
     
     cudaDeviceSynchronize();
-
+    err = cudaGetLastError();
+    if (err != cudaSuccess) {
+        printf("Error after allSubsets: %s\n", cudaGetErrorString(err));
+    }
+    cudaDeviceSynchronize();
+    
     //copy data to device
     cudaMemcpy(DP_d, DP, sizeof(unsigned int) * graph->num_nodes * numSubsets, cudaMemcpyHostToDevice);
     cudaMemcpy(apsp_d, apsp, sizeof(unsigned int) * graph->num_nodes * graph->num_nodes, cudaMemcpyHostToDevice);
