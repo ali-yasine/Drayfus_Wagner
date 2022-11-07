@@ -5,7 +5,7 @@
 
 
 
-__host__ unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
+static __host__ unsigned int* generateSubsets(unsigned int* terminals, unsigned int size) {
     unsigned int num_ones = 0;
     unsigned int* result, *decimalSubsets;
 
@@ -34,7 +34,7 @@ __host__ unsigned int* generateSubsets(unsigned int* terminals, unsigned int siz
     return result;
 }
 
-__device__  unsigned int* generateSubsetsGPU(unsigned int* terminals, unsigned int size) {
+static __device__  unsigned int* generateSubsetsGPU(unsigned int* terminals, unsigned int size) {
     unsigned int num_ones = 0;
     unsigned int* result, *decimalSubsets;
 
@@ -64,7 +64,7 @@ __device__  unsigned int* generateSubsetsGPU(unsigned int* terminals, unsigned i
 }
 
 
-__host__ unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
+static __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int size) {
     unsigned int* allSubsets = generateSubsets(set, size);
     unsigned int* result;
 
@@ -98,7 +98,7 @@ __host__ unsigned int* subsetK(unsigned int* set, unsigned int k, unsigned int s
     return result;
 }
 
-__device__  unsigned int* subsetKGPU(unsigned int* set, unsigned int k, unsigned int size) {
+static __device__  unsigned int* subsetKGPU(unsigned int* set, unsigned int k, unsigned int size) {
     unsigned int* allSubsets = generateSubsetsGPU(set, size);
     unsigned int* result;
 
@@ -131,7 +131,7 @@ __device__  unsigned int* subsetKGPU(unsigned int* set, unsigned int k, unsigned
 }
 
 
-__host__ unsigned int* getSortedSubsets(unsigned int size) {
+static __host__ unsigned int* getSortedSubsets(unsigned int size) {
     
     
     unsigned int* terminals, *result;
@@ -159,7 +159,7 @@ __host__ unsigned int* getSortedSubsets(unsigned int size) {
     free(terminals);
     return result;
 }
-__device__ unsigned int* getSortedSubsetsGPU(unsigned int size) {
+static __device__ unsigned int* getSortedSubsetsGPU(unsigned int size) {
     
     
     unsigned int* terminals, *result;
@@ -185,7 +185,7 @@ __device__ unsigned int* getSortedSubsetsGPU(unsigned int size) {
     cudaFree(terminals);
     return result;
 }
-__device__ __host__ unsigned int getSubsetIndex(unsigned int* set, unsigned int size, unsigned int* allSubsets){
+static __device__ __host__ unsigned int getSubsetIndex(unsigned int* set, unsigned int size, unsigned int* allSubsets){
 
     unsigned int num_ones = 0;
 
