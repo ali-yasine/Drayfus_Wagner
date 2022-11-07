@@ -31,8 +31,8 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
     unsigned int* subset = allSubsets + (blockIdx.y * numTerminals);
     unsigned int num_sub_subsets = (1 << k) - 1;
 
-    //TODO: try to do on cpu/ shared memory
-    unsigned int* subSubets = generateSubsets(subset, num_sub_subsets);
+    //TODO: try to do on shared memory
+    unsigned int* subSubets = generateSubsetsGPU(subset, num_sub_subsets);
 
     //try removing later
     __syncthreads();
@@ -44,7 +44,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
                 unsigned int ss_index = getSubsetIndex(subSubset, numTerminals, allSubsets);
                 
-                unsigned int* sMinusSS = setDifference(subset, subSubset, numTerminals);
+                unsigned int* sMinusSS = setDifferenceGPU(subset, subSubset, numTerminals);
                 unsigned int sMinusSS_index = getSubsetIndex(sMinusSS, numTerminals, allSubsets);
 
                 for(unsigned int vertex = 0; vertex < graph->num_nodes; ++vertex) {
