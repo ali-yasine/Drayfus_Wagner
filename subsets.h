@@ -158,7 +158,7 @@ __host__ unsigned int* getSortedSubsets(unsigned int size) {
     free(terminals);
     return result;
 }
-__device__ __host__ unsigned int* getSortedSubsetsGPU(unsigned int size) {
+__device__ unsigned int* getSortedSubsetsGPU(unsigned int size) {
     
     
     unsigned int* terminals, *result;
