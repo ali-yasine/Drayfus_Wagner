@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CSR_H_
+#define __CSR_H_
 #include <limits.h>
 
 struct CsrGraph {
@@ -19,3 +20,5 @@ struct CsrGraph {
         return UINT_MAX; 
     }
 };
+
+#endif
