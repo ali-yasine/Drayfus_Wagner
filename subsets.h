@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __SUBSETS_H_
+#define __SUBSETS_H_
 #include <stdlib.h>
 #include "Util.h"
 
@@ -211,3 +212,5 @@ __device__ __host__ unsigned int getSubsetIndex(unsigned int* set, unsigned int 
     }
     return -1;
 }
+
+#endif
