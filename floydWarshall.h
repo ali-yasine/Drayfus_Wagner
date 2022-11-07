@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __FLOYDWARSHALL_H_
+#define __FLOYDWARSHALL_H_
 #include "csr.h"
 #include <limits.h>
 #include <iostream>
@@ -41,3 +42,4 @@ unsigned int* floydWarshall(CsrGraph graph){
     return d;
 }
 #undef min
+#endif
