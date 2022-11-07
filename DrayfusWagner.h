@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef __DRAYFUSWAGNER_H_
+#define __DRAYFUSWAGNER_H_
 
 #include "csr.h"
 #include "floydWarshall.h"
@@ -98,3 +99,4 @@ unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsig
     free(allSubsets);
     return DP;
 }
+#endif
