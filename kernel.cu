@@ -1,8 +1,11 @@
-#include "Util.h"
-#include "csr.h"
+//#include "Util.h"
+//#include "csr.h"
+#include "stdio.h"
 #include "common.h"
 #include "subsets.h"
 #define MAX_THREADS 1024
+
+
 
 void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
 
@@ -68,70 +71,59 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 }
 
 
-void DrayfusWagnerGPU(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
-
-    cudaError_t err;
-
-
+void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
+    //printf("*********");
     unsigned int* allSubsets = getSortedSubsets(numTerminals);;
 
-    unsigned int* DP_d, *apsp_d, *allSubsets_d, *terminals_d;
+    unsigned int *DP_d, *apsp_d, *allSubsets_d, *terminals_d;
+    //printf("Done Terminals%d\n", numTerminals);
     unsigned int numSubsets = (1 << numTerminals) - 1;
+    
+    for(unsigned int i = 0; i < graph_cpu->num_nodes * numSubsets; ++i)
+      DP[i] = UINT_MAX;
+      
+    DP[0] = 1;
+      
+    printf("Done SIngletons%u\n", DP[0]);
 
-    handleSingletons(DP, apsp, allSubsets, numTerminals, graph->num_nodes, terminals);
-
+    handleSingletons(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
+    printf("Done SIngletons%u\n", DP[0]);
+    //printf("Done SIngletons\n");
     //allocate memory 
-    cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph->num_nodes * numSubsets);
-    //get last error
-    err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        printf("Error after DP : %s\n", cudaGetErrorString(err));
-    }
-    cudaDeviceSynchronize();
-    cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph->num_nodes * graph->num_nodes);
-    err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        printf("Error after apsp: %s\n", cudaGetErrorString(err));
-    }
-    cudaDeviceSynchronize();
-
+    cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph_cpu->num_nodes * numSubsets);
+    cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes);
     cudaMalloc((void**) &allSubsets_d, sizeof(unsigned int) * numSubsets);
-    err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        printf("Error after allSubsets: %s\n", cudaGetErrorString(err));
-    }
-    cudaDeviceSynchronize();
-
     cudaMalloc((void**) &terminals_d, sizeof(unsigned int) * numTerminals);
     
-    cudaDeviceSynchronize();
-    err = cudaGetLastError();
-    if (err != cudaSuccess) {
-        printf("Error after allSubsets: %s\n", cudaGetErrorString(err));
-    }
-    cudaDeviceSynchronize();
-    
     //copy data to device
-    cudaMemcpy(DP_d, DP, sizeof(unsigned int) * graph->num_nodes * numSubsets, cudaMemcpyHostToDevice);
-    cudaMemcpy(apsp_d, apsp, sizeof(unsigned int) * graph->num_nodes * graph->num_nodes, cudaMemcpyHostToDevice);
+    cudaMemcpy(DP_d, DP, sizeof(unsigned int) * graph_cpu->num_nodes * numSubsets, cudaMemcpyHostToDevice);
+    cudaMemcpy(apsp_d, apsp, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes, cudaMemcpyHostToDevice);
     cudaMemcpy(allSubsets_d, allSubsets, sizeof(unsigned int) * numSubsets, cudaMemcpyHostToDevice);
     cudaMemcpy(terminals_d, terminals, sizeof(unsigned int) * numTerminals, cudaMemcpyHostToDevice);
 
     cudaDeviceSynchronize();
+    
+    for(int i = 0; i < 1; ++i){//sizeof(unsigned int) * graph.num_nodes *  ((1 << numberOfTerminals) - 1)
+      //if(DP[i] != DP_d[i]){
+        
+        printf("mismatch at %d\t%d\t\n", i,DP[i]);
+        //break;
+      //}
+    }
 
     //launch kernel
     for(unsigned int k = 2; k < numTerminals; k++) {
 
         unsigned int currSubsetNum = choose(numTerminals, k);
         unsigned int coarseFactor = (MAX_THREADS +  currSubsetNum - 1) / currSubsetNum;
-        dim3 numBlocks (graph->num_nodes, currSubsetNum);
+        dim3 numBlocks (graph_cpu->num_nodes, currSubsetNum);
 
         DW_kernel<<<numBlocks, MAX_THREADS>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k);
         cudaDeviceSynchronize();
     }
 
     //copy data back to host
-    cudaMemcpy(DP, DP_d, sizeof(unsigned int) * graph->num_nodes * ((1 << numTerminals) - 1), cudaMemcpyDeviceToHost);
+    cudaMemcpy(DP, DP_d, sizeof(unsigned int) * graph_cpu->num_nodes * ((1 << numTerminals) - 1), cudaMemcpyDeviceToHost);
 
 
     cudaDeviceSynchronize();

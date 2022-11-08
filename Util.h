@@ -1,14 +1,14 @@
 #ifndef __UTIL_H_
 #define __UTIL_H_
 
- static __host__ __device__ unsigned int binaryToDecimal(unsigned int* arr, unsigned int size) {
+__host__ __device__ static unsigned int binaryToDecimal(unsigned int* arr, unsigned int size) {
     unsigned int result = 0;
     for (unsigned int i = 0; i < size; ++i) {
         result += arr[i] * (1 << i);
     }
     return result;
 }
-static __host__ unsigned int* decimalToBinary(unsigned int decimal, unsigned int binarySize) {
+__host__ static unsigned int* decimalToBinary(unsigned int decimal, unsigned int binarySize) {
     
     unsigned int* result = (unsigned int*) calloc(binarySize, sizeof(unsigned int));
 
@@ -17,7 +17,7 @@ static __host__ unsigned int* decimalToBinary(unsigned int decimal, unsigned int
     }
     return result;
 }
-static __device__ unsigned int* decimalToBinaryGPU(unsigned int decimal, unsigned int binarySize) {
+__device__ static unsigned int* decimalToBinaryGPU(unsigned int decimal, unsigned int binarySize) {
     
     unsigned int* result;
 
@@ -28,7 +28,7 @@ static __device__ unsigned int* decimalToBinaryGPU(unsigned int decimal, unsigne
     return result;
 }
 
-static __device__ __host__ unsigned int choose(unsigned int n, unsigned int k){
+__device__ __host__ static unsigned int choose(unsigned int n, unsigned int k){
     if (k > n)
         return 0;
     if (k * 2 > n)
@@ -43,7 +43,7 @@ static __device__ __host__ unsigned int choose(unsigned int n, unsigned int k){
     return result;
 }
 
-static __host__ unsigned int* setDifference(unsigned int* set1, unsigned int* set2, unsigned int size){
+__host__ static unsigned int* setDifference(unsigned int* set1, unsigned int* set2, unsigned int size){
     unsigned int* set1MinusSet2 = (unsigned int*) malloc(size * sizeof(unsigned int));
 
     for (unsigned int i = 0; i < size; i++){
@@ -56,7 +56,7 @@ static __host__ unsigned int* setDifference(unsigned int* set1, unsigned int* se
     }
     return set1MinusSet2;
 }
-static __device__  unsigned int* setDifferenceGPU(unsigned int* set1, unsigned int* set2, unsigned int size){
+__device__ static  unsigned int* setDifferenceGPU(unsigned int* set1, unsigned int* set2, unsigned int size){
     unsigned int* set1MinusSet2;
     cudaMalloc(&set1MinusSet2, size * sizeof(unsigned int));
 
@@ -71,7 +71,7 @@ static __device__  unsigned int* setDifferenceGPU(unsigned int* set1, unsigned i
     return set1MinusSet2;
 }
 
-static __device__ __host__ bool contains(unsigned int* set, unsigned int N, unsigned int vertex) {
+__device__ __host__ static  bool contains(unsigned int* set, unsigned int N, unsigned int vertex) {
     for (unsigned int i = 0; i < N; ++i) {
         if (set[i] == vertex)
             return true;
@@ -79,7 +79,7 @@ static __device__ __host__ bool contains(unsigned int* set, unsigned int N, unsi
     return false;
 }
 
-static __device__ __host__ bool equals(unsigned int* set1, unsigned int* set2, unsigned int size) {
+__device__ __host__ static bool equals(unsigned int* set1, unsigned int* set2, unsigned int size) {
     for (unsigned int i = 0; i < size; ++i) {
         if (set1[i] != set2[i])
             return false;
