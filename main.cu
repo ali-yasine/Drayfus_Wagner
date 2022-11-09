@@ -12,12 +12,11 @@
 
 void verify(unsigned int * DP, unsigned int * DP_d, unsigned int size){
 
-  for(int i = 0; i < size; i++){
+  for(int i = 0; i < size; ++i){
   
     if(DP[i] != DP_d[i])
-    {
       printf("mismatch at %d\tDP: %u\tDP_d: %u\n", i, DP[i], DP_d[i]);
-    }
+
   }
 }
 
@@ -28,14 +27,22 @@ int main() {
 
     //Testing on a graph of 10 vertices
     
-    unsigned int numberOfVertices = 7;   
-    unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 7, 1, 6, 1};
-    unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 2, 4, 3, 4};
-    unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 14, 16, 18};
-    unsigned int numberOfTerminals = 3;
-    unsigned int terminals[] = {7, 8, 9};
+      unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 3, 7, 1, 2, 4, 6, 1, 3, 3, 2, 4, 3};//{0, 4, 8, 4, 0, 2, 3, 8, 0, 5, 7, 2, 0, 6, 3, 5, 0, 1, 1, 3, 7, 1, 0, 2, 4, 6, 1, 0, 3, 3, 2, 0, 4, 0, 3, 0};
+      unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 7, 2, 4, 7, 8, 3, 4, 9, 4, 5, 5, 6};//{0, 1, 2, 0, 1, 3, 4, 0, 2, 4, 5, 1, 3, 6, 1, 2, 4, 5, 6, 7, 2, 4, 5, 7, 8, 3, 4, 6, 9, 4, 5, 7, 5, 8, 6, 9};
+      unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 15, 19, 22, 24, 25, 26};//{0, 3, 7, 11, 14, 20, 25, 29, 32, 34, 36};
+      unsigned int numberOfVertices = 10;   
+      unsigned int numberOfTerminals = 3;
+      unsigned int terminals[] = {7, 8, 9};
     
-    
+    unsigned int terminalTest[] {1,1,1};
+    unsigned int* res = generateSubsets(terminalTest, 3);
+    for (unsigned int subset = 0; subset < (1 << 3) - 1; ++subset) {
+      printf("subset %u: ", subset);
+      for(unsigned int v = 0; v < 3; ++v){
+          printf("%u\t", res[subset * 3 + v]);
+      }
+      printf("\n");
+    }
     // Testing on a graph of 20 vertices
     /*
     unsigned int numberOfVertices = 20;   
@@ -53,10 +60,7 @@ int main() {
         col,
         values
     };
-    //TODO 
-    // printf("Reading graph from file: %s\n", matrixFile);
-    // CsrGraph* graph = CSRfromFile(matrixFile);
-    // printf("Graph read from file: %s\n", matrixFile);
+
 
     Timer timer;
     startTime(&timer);
@@ -64,14 +68,24 @@ int main() {
     unsigned int* apsp = floydWarshall(graph);
     stopTime(&timer);
     printElapsedTime(timer, "    Floyd-Warshall");
-
+    for(unsigned int i = 0; i < numberOfVertices; ++i){
+      for(unsigned int j = 0; j < numberOfVertices; ++j){
+        printf("%u\t", apsp[i * numberOfVertices + j]);
+      }
+      printf("\n");
+    }
+    
     printf("Running CPU version\n");
 
     unsigned int* cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals, apsp);
     
     stopTime(&timer);
     printElapsedTime(timer, "    CPU time", CYAN);
-
+    for(unsigned int i = 0; i < graph.num_nodes; ++i) {
+      for(unsigned int j = 0; j < ((1 << numberOfTerminals) - 1); ++j) 
+        printf("%u\t", cpuResult[i * ((1 << numberOfTerminals) - 1) + j]);
+      printf("\n");
+    }
     printf("Running GPU version\n");
 
     // Allocate GPU memory
@@ -91,9 +105,6 @@ int main() {
 
     unsigned int* DP = (unsigned int*) malloc(sizeof(unsigned int) * graph.num_nodes *  ((1 << numberOfTerminals) - 1) );
     
-    for(int i = 0; i < graph.num_nodes *  ((1 << numberOfTerminals) - 1); i++) {
-        DP[i] = UINT_MAX;
-    }
     
     startTime(&timer);
     DrayfusWagnerGPU(&graph, graph_d, numberOfTerminals, terminals, DP, apsp);
@@ -101,7 +112,5 @@ int main() {
 
     printElapsedTime(timer, "  GPU Kernel time", CYAN);
     
-    verify(cpuResult, DP, 10);
-    
-  
+    verify(cpuResult, DP, graph.num_nodes * ((1 << numberOfTerminals) - 1));
 }

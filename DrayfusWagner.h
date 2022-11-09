@@ -95,7 +95,6 @@ unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsig
         }
         curr_subset_index += numSubsets;
     }
-    free(apsp);
     free(allSubsets);
     return DP;
 }
