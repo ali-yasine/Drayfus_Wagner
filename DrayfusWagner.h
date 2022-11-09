@@ -1,17 +1,13 @@
 #ifndef __DRAYFUSWAGNER_H_
 #define __DRAYFUSWAGNER_H_
 
-//#include "csr.h"
 #include "floydWarshall.h"
 #include "subsets.h"
-//#include "Util.h"
 #include <iostream>
 #include <limits.h>
 
-unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsigned int* terminalMap, unsigned int* apsp) {
+static unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsigned int* terminalMap, unsigned int* apsp) {
     
-
-
     unsigned int total_subset_count = (1 << numTerminals) - 1;
 
     unsigned int* DP = (unsigned int* ) calloc(graph.num_nodes * total_subset_count, sizeof(unsigned int));
@@ -44,12 +40,12 @@ unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsig
     unsigned int curr_subset_index = numTerminals;
 
     //loop over subset sizes
-    for(unsigned int k = 2; k < numTerminals; ++k) {
+    for(unsigned int k = 2; k <= numTerminals; ++k) {
         
         unsigned int numSubsets = choose(numTerminals, k);
         
         //loop over subsets
-        for (unsigned int subset = curr_subset_index; subset <= curr_subset_index + numSubsets ; ++subset ) {
+        for (unsigned int subset = curr_subset_index; subset < curr_subset_index + numSubsets; ++subset ) {
             
             unsigned int* currSubset = allSubsets + (subset * numTerminals);
             

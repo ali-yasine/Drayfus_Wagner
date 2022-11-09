@@ -27,22 +27,13 @@ int main() {
 
     //Testing on a graph of 10 vertices
     
-      unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 3, 7, 1, 2, 4, 6, 1, 3, 3, 2, 4, 3};//{0, 4, 8, 4, 0, 2, 3, 8, 0, 5, 7, 2, 0, 6, 3, 5, 0, 1, 1, 3, 7, 1, 0, 2, 4, 6, 1, 0, 3, 3, 2, 0, 4, 0, 3, 0};
-      unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 7, 2, 4, 7, 8, 3, 4, 9, 4, 5, 5, 6};//{0, 1, 2, 0, 1, 3, 4, 0, 2, 4, 5, 1, 3, 6, 1, 2, 4, 5, 6, 7, 2, 4, 5, 7, 8, 3, 4, 6, 9, 4, 5, 7, 5, 8, 6, 9};
-      unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 15, 19, 22, 24, 25, 26};//{0, 3, 7, 11, 14, 20, 25, 29, 32, 34, 36};
-      unsigned int numberOfVertices = 10;   
-      unsigned int numberOfTerminals = 3;
-      unsigned int terminals[] = {7, 8, 9};
-    
-    unsigned int terminalTest[] {1,1,1};
-    unsigned int* res = generateSubsets(terminalTest, 3);
-    for (unsigned int subset = 0; subset < (1 << 3) - 1; ++subset) {
-      printf("subset %u: ", subset);
-      for(unsigned int v = 0; v < 3; ++v){
-          printf("%u\t", res[subset * 3 + v]);
-      }
-      printf("\n");
-    }
+    unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 3, 7, 1, 2, 4, 6, 1, 3, 3, 2, 4, 3};//{0, 4, 8, 4, 0, 2, 3, 8, 0, 5, 7, 2, 0, 6, 3, 5, 0, 1, 1, 3, 7, 1, 0, 2, 4, 6, 1, 0, 3, 3, 2, 0, 4, 0, 3, 0};
+    unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 7, 2, 4, 7, 8, 3, 4, 9, 4, 5, 5, 6};//{0, 1, 2, 0, 1, 3, 4, 0, 2, 4, 5, 1, 3, 6, 1, 2, 4, 5, 6, 7, 2, 4, 5, 7, 8, 3, 4, 6, 9, 4, 5, 7, 5, 8, 6, 9};
+    unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 15, 19, 22, 24, 25, 26};//{0, 3, 7, 11, 14, 20, 25, 29, 32, 34, 36};
+    unsigned int numberOfVertices = 10;   
+    unsigned int numberOfTerminals = 3;
+    unsigned int terminals[] = {7, 8, 9};
+  
     // Testing on a graph of 20 vertices
     /*
     unsigned int numberOfVertices = 20;   
@@ -61,47 +52,30 @@ int main() {
         values
     };
 
-
     Timer timer;
     startTime(&timer);
     printf("Computing Floyd-Warshall...\n");
     unsigned int* apsp = floydWarshall(graph);
     stopTime(&timer);
-    printElapsedTime(timer, "    Floyd-Warshall");
-    for(unsigned int i = 0; i < numberOfVertices; ++i){
-      for(unsigned int j = 0; j < numberOfVertices; ++j){
-        printf("%u\t", apsp[i * numberOfVertices + j]);
-      }
-      printf("\n");
-    }
+    printElapsedTime(timer, "Floyd-Warshall");
+    
     
     printf("Running CPU version\n");
 
     unsigned int* cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals, apsp);
     
     stopTime(&timer);
-    printElapsedTime(timer, "    CPU time", CYAN);
-    for(unsigned int i = 0; i < graph.num_nodes; ++i) {
-      for(unsigned int j = 0; j < ((1 << numberOfTerminals) - 1); ++j) 
-        printf("%u\t", cpuResult[i * ((1 << numberOfTerminals) - 1) + j]);
-      printf("\n");
-    }
+    printElapsedTime(timer, "CPU time", CYAN);
+    
     printf("Running GPU version\n");
 
     // Allocate GPU memory
-    startTime(&timer);
     CsrGraph* graph_d = createEmptyCSRGraphOnGPU(graph.num_nodes, graph.num_edges);
-    stopTime(&timer);
-    printElapsedTime(timer, "  GPU allocation time");
 
     // Copy graph to GPU
-    startTime(&timer);
-    
+
     copyCSRGraphToGPU(&graph, graph_d);
     cudaDeviceSynchronize();
-
-    stopTime(&timer);
-    printElapsedTime(timer, "  GPU copy time");
 
     unsigned int* DP = (unsigned int*) malloc(sizeof(unsigned int) * graph.num_nodes *  ((1 << numberOfTerminals) - 1) );
     
@@ -110,7 +84,7 @@ int main() {
     DrayfusWagnerGPU(&graph, graph_d, numberOfTerminals, terminals, DP, apsp);
     stopTime(&timer);
 
-    printElapsedTime(timer, "  GPU Kernel time", CYAN);
+    printElapsedTime(timer, "GPU total time", CYAN);
     
     verify(cpuResult, DP, graph.num_nodes * ((1 << numberOfTerminals) - 1));
 }
