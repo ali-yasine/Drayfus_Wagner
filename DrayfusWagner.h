@@ -1,22 +1,19 @@
-#pragma once 
-#include "csr.h"
+#ifndef __DRAYFUSWAGNER_H_
+#define __DRAYFUSWAGNER_H_
+
 #include "floydWarshall.h"
 #include "subsets.h"
-#include "Util.h"
 #include <iostream>
 #include <limits.h>
 
-unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned int numTerminals, unsigned int* terminalMap) {
-
-    unsigned int* apsp = floydWarshall(graph);
-
+static unsigned int* DrayfusWagner(CsrGraph graph, unsigned int numTerminals, unsigned int* terminalMap, unsigned int* apsp) {
+    
     unsigned int total_subset_count = (1 << numTerminals) - 1;
 
     unsigned int* DP = (unsigned int* ) calloc(graph.num_nodes * total_subset_count, sizeof(unsigned int));
     
     unsigned int* allSubsets = getSortedSubsets(numTerminals);
     
-
     //init DP to INF
     for(unsigned int i = 0; i < graph.num_nodes; ++i)
         for(unsigned int j = 0; j < total_subset_count; ++j)
@@ -43,12 +40,12 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
     unsigned int curr_subset_index = numTerminals;
 
     //loop over subset sizes
-    for(unsigned int k = 2; k < numTerminals; ++k) {
+    for(unsigned int k = 2; k <= numTerminals; ++k) {
         
         unsigned int numSubsets = choose(numTerminals, k);
         
         //loop over subsets
-        for (unsigned int subset = curr_subset_index; subset <= curr_subset_index + numSubsets ; ++subset ) {
+        for (unsigned int subset = curr_subset_index; subset < curr_subset_index + numSubsets; ++subset ) {
             
             unsigned int* currSubset = allSubsets + (subset * numTerminals);
             
@@ -94,7 +91,7 @@ unsigned int* DrayfusWagner(CsrGraph graph, unsigned int* terminals, unsigned in
         }
         curr_subset_index += numSubsets;
     }
-    free(apsp);
     free(allSubsets);
     return DP;
 }
+#endif

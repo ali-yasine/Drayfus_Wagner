@@ -7,14 +7,12 @@ using namespace chrono;
 int main() {
 
     //Testing on a graph of 10 vertices
-    unsigned int numberOfVertices = 7;   
-    unsigned int numberOfTeriminals = 3;
-    unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 7, 1, 6, 1};
-    unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 2, 4, 3, 4};
-    unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 14, 16, 18};
+    unsigned int values[] =  {4, 8, 4, 2, 3, 8, 5, 7, 2, 6, 3, 5, 1, 1, 3, 7, 1, 2, 4, 6, 1, 3, 3, 2, 4, 3};//{0, 4, 8, 4, 0, 2, 3, 8, 0, 5, 7, 2, 0, 6, 3, 5, 0, 1, 1, 3, 7, 1, 0, 2, 4, 6, 1, 0, 3, 3, 2, 0, 4, 0, 3, 0};
+    unsigned int col[] =     {1, 2, 0, 3, 4, 0, 4, 5, 1, 6, 1, 2, 5, 6, 7, 2, 4, 7, 8, 3, 4, 9, 4, 5, 5, 6};//{0, 1, 2, 0, 1, 3, 4, 0, 2, 4, 5, 1, 3, 6, 1, 2, 4, 5, 6, 7, 2, 4, 5, 7, 8, 3, 4, 6, 9, 4, 5, 7, 5, 8, 6, 9};
+    unsigned int rowPtr[] =  {0, 2, 5, 8, 10, 15, 19, 22, 24, 25, 26};//{0, 3, 7, 11, 14, 20, 25, 29, 32, 34, 36};
+    unsigned int numberOfVertices = 10;   
     unsigned int numberOfTerminals = 3;
-    unsigned int terminals[] {2, 3, 5};
-    unsigned int bitTerminals[] {1,1,1};
+    unsigned int terminals[] = {7, 8, 9};
 
     // Testing on a graph of 20 vertices
     // unsigned int numberOfVertices = 20;   
@@ -32,10 +30,10 @@ int main() {
         col,
         values
     };
-
+    unsigned int* apsp = floydWarshall(graph);
     //start
     auto start = high_resolution_clock::now();
-    unsigned int* result = DrayfusWagner(graph, bitTerminals, numberOfTerminals, terminals);
+    unsigned int* result = DrayfusWagner(graph, numberOfTerminals, terminals, apsp);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     cout << "Time taken by function with " << numberOfVertices <<" vertices: "<< duration.count() << " nanoseconds" << endl;
