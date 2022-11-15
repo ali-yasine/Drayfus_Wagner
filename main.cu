@@ -7,8 +7,6 @@
 #include "csr.h"
 #include "timer.h"
 #include "common.h"
-//#include "Util.h"
-//#include "subsets.h"
 
 void verify(unsigned int * DP, unsigned int * DP_d, unsigned int size){
 
@@ -27,7 +25,10 @@ int main(int argc, char** argv) {
 
     //Testing on a graph of 10 vertices
     const char* filename = "data/10.txt";
-    CsrGraph* graph = readCsrGraph(filename);  
+    CsrGraph* graph = readCsrGraph(filename);
+    unsigned int numberOfTerminals = 3;
+    unsigned int terminals[] = {2,3,5};
+
     // Testing on a graph of 20 vertices
     /*
     unsigned int numberOfVertices = 20;   

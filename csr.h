@@ -13,12 +13,14 @@ struct CsrGraph {
         if (src == dst) 
             return 0;
         
-        for(unsigned int i = row_offsets[src]; i < row_offsets[src+1]; ++i)
+        for(unsigned int i = row_offsets[src]; i < row_offsets[src + 1]; ++i)
             if(col_indices[i] == dst)
                 return edge_weights[i];
                 
         return UINT_MAX; 
     }
 };
+
+CsrGraph* readCSRgraph(const char* filename);
 
 #endif
