@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 #include "DrayfusWagner.h"
-#include "csr.h"
 #include "timer.h"
 #include "common.h"
 
@@ -25,7 +24,7 @@ int main(int argc, char** argv) {
 
     //Testing on a graph of 10 vertices
     const char* filename = "data/10.txt";
-    CsrGraph* graph = readCsrGraph(filename);
+    CsrGraph* graph = readCSRgraph(filename);
     unsigned int numberOfTerminals = 3;
     unsigned int terminals[] = {2,3,5};
 
@@ -74,4 +73,15 @@ int main(int argc, char** argv) {
     printElapsedTime(timer, "GPU total time", CYAN);
     
     verify(cpuResult, DP, graph->num_nodes * ((1 << numberOfTerminals) - 1));
+    
+    // CsrGraph* graph_opt1_d = createEmptyCSRGraphOnGPU(graph->num_nodes, graph->num_edges);
+    // copyCSRGraphToGPU(graph, graph_opt1_d);
+    // cudaDeviceSynchronize();
+    // unsigned int* DP_opt1 = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_nodes *  ((1 << numberOfTerminals) - 1) );
+    // startTime(&timer);
+    // DrayfusWagnerGPU_opt1(graph, graph_opt1_d, numberOfTerminals, terminals, DP_opt1, apsp);
+    // stopTime(&timer);
+    // printElapsedTime(timer, "GPU opt1 time", CYAN);
+    // verify(cpuResult, DP_opt1, graph->num_nodes * ((1 << numberOfTerminals) - 1));
+    
 }

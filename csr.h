@@ -21,6 +21,4 @@ struct CsrGraph {
     }
 };
 
-CsrGraph* readCSRgraph(const char* filename);
-
 #endif

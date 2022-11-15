@@ -10,4 +10,7 @@ void DrayfusWagnerGPU(CsrGraph* graph, CsrGraph* graph_d, unsigned int numTermin
 
 void copyCSRGraphToGPU(CsrGraph* graph, CsrGraph* graph_d);
 
+
+CsrGraph* readCSRgraph(const char* filename);
+
 #endif

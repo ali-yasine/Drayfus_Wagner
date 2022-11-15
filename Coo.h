@@ -8,10 +8,10 @@ struct CooGraph {
     unsigned int num_edges;
     unsigned int* row_indices;
     unsigned int* col_indices;
-    unsigned int* edge_weights
-
-}
+    unsigned int* edge_weights;
+};
 
 CsrGraph* cooToCSR(CooGraph* coo);
 
 CooGraph* readGraph(const char* filename);
+#endif

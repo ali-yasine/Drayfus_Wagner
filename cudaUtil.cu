@@ -1,5 +1,5 @@
 #include "csr.h"
-
+#include "Coo.h"
 #include <cstdlib>
 #include <stdio.h>
 #include <assert.h>
@@ -49,9 +49,9 @@ CsrGraph* cooToCSR(CooGraph* coo) {
     // Initialize fields
     graph->num_nodes = coo->num_nodes;
     graph->num_edges = coo->num_edges;
-    graph->row_offsets = (unsigned int*) calloc(sizeof(unsigned int) * (coo->num_nodes + 1));
-    graph->col_indices = (unsigned int*) calloc(sizeof(unsigned int) * coo->num_edges);
-    graph->edge_weights = (unsigned int*) calloc(sizeof(unsigned int) * coo->num_edges);
+    graph->row_offsets = (unsigned int*) calloc((coo->num_nodes + 1),sizeof(unsigned int));
+    graph->col_indices = (unsigned int*) calloc(coo->num_edges, sizeof(unsigned int) );
+    graph->edge_weights = (unsigned int*) calloc(coo->num_edges, sizeof(unsigned int));
 
     //histogram rows
     for(unsigned int i = 0; i < coo->num_edges; ++i) {
@@ -87,13 +87,13 @@ CsrGraph* cooToCSR(CooGraph* coo) {
 
 CooGraph* readCOOGraph(const char* filename) {
     CooGraph* graph = (CooGraph*) malloc(sizeof(CooGraph));
-    FILE* file = fopen(filename, "r");
+    FILE* fp = fopen(filename, "r");
 
     //Initialize fields
     int x = 1;
     x |= fscanf(fp, "%u", &graph->num_nodes);
     x |= fscanf(fp, "%u", &graph->num_edges);
-    graph->row_offsets = (unsigned int*) malloc(sizeof(unsigned int) * (graph->num_nodes + 1));
+    graph->row_indices = (unsigned int*) malloc(sizeof(unsigned int) * (graph->num_edges));
     graph->col_indices = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_edges);
     graph->edge_weights = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_edges);
 
@@ -104,7 +104,7 @@ CooGraph* readCOOGraph(const char* filename) {
         x |= fscanf(fp, "%u", &graph->edge_weights[i]);
     }   
 
-    fclose(file);
+    fclose(fp);
     return graph;
 }
 
