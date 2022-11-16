@@ -1,5 +1,6 @@
 #include "csr.h"
 #include "Coo.h"
+#include <string>
 #include <cstdlib>
 #include <stdio.h>
 #include <assert.h>
@@ -118,28 +119,30 @@ CsrGraph* readCSRgraph(const char* filename) {
     return graph;
 }
 
-void generateCOOGraph(unsigned int num_nodes) {
-    FILE* file = fopen(num_nodes + ".txt", "w");
-    unsigned int num_edges = (num_nodes * num_nodes * 30) / 100;
-    fprintf(file, "%u %u\n", num_nodes, num_edges);
+//TODO
 
-    bool edges[num_nodes][num_nodes];
-    memset(edges, 0, sizeof(bool) * num_nodes * num_nodes);
+// void generateCOOGraph(unsigned int num_nodes) {
+//     FILE* file = fopen(std::to_string(num_nodes) + ".txt", "w");
+//     unsigned int num_edges = (num_nodes * num_nodes * 30) / 100;
+//     fprintf(file, "%u %u\n", num_nodes, num_edges);
 
-    for(unsigned int i = 0; i < (num_edges + 1)/ 2; ++i) {
-        unsigned int src = rand() % num_nodes;
-        unsigned int dst = rand() % num_nodes; 
-        if (edges[src][dst]) {
-            --i;
-            continue;
-        }
-        unsigned int edgeval = (src == dst) ? 0 : rand() % 100;
-        fprintf(file, "%u %u %u\n", src, dst, edgeval);
-        fprintf(file, "%u %u %u\n", dst, src, edgeval);
-        edges[src][dst] = true;
-    }
-    fclose(file);
-}
+//     bool edges[num_nodes][num_nodes];
+//     memset(edges, 0, sizeof(bool) * num_nodes * num_nodes);
+
+//     for(unsigned int i = 0; i < (num_edges + 1)/ 2; ++i) {
+//         unsigned int src = rand() % num_nodes;
+//         unsigned int dst = rand() % num_nodes; 
+//         if (edges[src][dst]) {
+//             --i;
+//             continue;
+//         }
+//         unsigned int edgeval = (src == dst) ? 0 : rand() % 100;
+//         fprintf(file, "%u %u %u\n", src, dst, edgeval);
+//         fprintf(file, "%u %u %u\n", dst, src, edgeval);
+//         edges[src][dst] = true;
+//     }
+//     fclose(file);
+// }
 
 void printDP(unsigned int* DP,unsigned int num_nodes, unsigned int num_subsets) {
     for(unsigned int v = 0; v < num_nodes; ++v) {

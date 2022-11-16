@@ -56,7 +56,7 @@ __global__ void DW_kernel_o1(CsrGraph* graph, unsigned int numTerminals, unsigne
                         if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_v != UINT_MAX) {
 
                             unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
-                            atomicMin(& DP[ ( blockIdx.y + subsetsDoneSoFar) * graph->num_nodes + root], sum);
+                            atomicMin(& DP[( blockIdx.y + subsetsDoneSoFar) * graph->num_nodes + root], sum);
                             
                         }   
                     }
@@ -81,6 +81,8 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
 
     handleSingletons_o1(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
     startTime(&timer);
+
+    
     //allocate memory 
     cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph_cpu->num_nodes * numSubsets);
     cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes);
@@ -119,6 +121,10 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
         }
         dim3 numBlocks (graph_cpu->num_nodes, currSubsetNum);
         DW_kernel_o1<<<numBlocks, numThreads>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
+        cudaError_t err = cudaGetLastError();
+        if (err != cudaSuccess) 
+            printf("Error: %s\n", cudaGetErrorString(err));
+
         cudaDeviceSynchronize();
         
         subsetsDoneSoFar += currSubsetNum;

@@ -24,8 +24,7 @@ void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSub
                     break;
                 }
             }
-            DP[vertex * totalSubsetCount + subset] = apsp[vertex * num_nodes + terminals[index]];
-            
+            DP[vertex * totalSubsetCount + subset] = apsp[vertex * num_nodes + terminals[index]];   
         }
     }
 }
@@ -94,6 +93,7 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
     cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes);
     cudaMalloc((void**) &allSubsets_d, sizeof(unsigned int) * numSubsets * numTerminals);
     cudaMalloc((void**) &terminals_d, sizeof(unsigned int) * numTerminals);
+    
     cudaDeviceSynchronize();
     stopTime(&timer);
     printElapsedTime(timer, "Allocation time: ");
@@ -127,6 +127,9 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
         }
         dim3 numBlocks (graph_cpu->num_nodes, currSubsetNum);
         DW_kernel<<<numBlocks, numThreads>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
+        cudaError_t err = cudaGetLastError();
+        if (err != cudaSuccess) 
+            printf("Error: %s\n", cudaGetErrorString(err));
         cudaDeviceSynchronize();
         
         subsetsDoneSoFar += currSubsetNum;
