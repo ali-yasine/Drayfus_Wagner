@@ -1,5 +1,3 @@
-//#include "Util.nqdsh"
-//#include "csr.h"
 #include "stdio.h"
 #include "common.h"
 #include "subsets.h"
@@ -8,8 +6,7 @@
 #define MAX_THREADS 1024
 
 
-
-void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
+void handleSingletons_o1(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
 
     unsigned int totalSubsetCount = (1 << numTerminals) - 1;
 
@@ -24,17 +21,15 @@ void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSub
                     break;
                 }
             }
-            DP[vertex * totalSubsetCount + subset] = apsp[vertex * num_nodes + terminals[index]];
-            
+            DP[subset * num_nodes + vertex] = apsp[vertex * num_nodes + terminals[index]];
         }
     }
 }
 
-__global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets, unsigned int numSubsets, unsigned int coarseFactor, unsigned int k, unsigned int subsetsDoneSoFar) {
+__global__ void DW_kernel_o1(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets, unsigned int numSubsets, unsigned int coarseFactor, unsigned int k, unsigned int subsetsDoneSoFar) {
 
     unsigned int root = blockIdx.x;
     unsigned int* subset = allSubsets + ((subsetsDoneSoFar + blockIdx.y ) * numTerminals);
-    
     unsigned int num_sub_subsets = (1 << k) - 1;
 
     //TODO: try to do on shared memory
@@ -53,27 +48,15 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
                     for(unsigned int vertex = 0; vertex < graph->num_nodes; ++vertex) {
 
-                        unsigned int v_to_sub_Subset = DP[vertex * numSubsets + ss_index];
-                        unsigned int v_S_minusSS = DP[vertex * numSubsets + sMinusSS_index]; 
+                        unsigned int v_to_sub_Subset = DP[ss_index * graph->num_nodes + vertex];
+                        unsigned int v_S_minusSS = DP[sMinusSS_index * graph->num_nodes + vertex]; 
                         unsigned int root_to_v = apsp[root * graph->num_nodes + vertex]; 
                         
 
                         if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_v != UINT_MAX) {
 
                             unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
-
-                            if (root == 9 &&  sum == 19 && threadIdx) {
-                                printf("vertex: %u, subset:", vertex);
-                                for(unsigned int i = 0; i < numTerminals; ++i) {
-                                    printf("%u ", subset[i]);
-                                }
-                                printf("subsubset:");
-                                for(unsigned int i = 0; i < numTerminals; ++i) {
-                                    printf("%u ", subSubset[i]);
-                                }
-                                printf("\n");
-                            }
-                            atomicMin(& DP[root * numSubsets + blockIdx.y + subsetsDoneSoFar], sum);
+                            atomicMin(& DP[ ( blockIdx.y + subsetsDoneSoFar) * graph->num_nodes + root], sum);
 
                         }   
                     }
@@ -85,22 +68,19 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 }
 
 
-void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
+void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp) {
 
     Timer timer;
 
     unsigned int* allSubsets = getSortedSubsets(numTerminals);;
-
     unsigned int *DP_d, *apsp_d, *allSubsets_d, *terminals_d;
     unsigned int numSubsets = (1 << numTerminals) - 1;
 
     for(unsigned int i = 0; i < graph_cpu->num_nodes * numSubsets; ++i)
       DP[i] = UINT_MAX;
 
-    handleSingletons(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
+    handleSingletons_o1(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
     startTime(&timer);
-
-
     //allocate memory 
     cudaMalloc((void**) &DP_d, sizeof(unsigned int) * graph_cpu->num_nodes * numSubsets);
     cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes);
@@ -138,7 +118,7 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
             coarseFactor = 1;
         }
         dim3 numBlocks (graph_cpu->num_nodes, currSubsetNum);
-        DW_kernel<<<numBlocks, numThreads>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
+        DW_kernel_o1<<<numBlocks, numThreads>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
         cudaDeviceSynchronize();
         
         subsetsDoneSoFar += currSubsetNum;

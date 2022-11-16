@@ -6,15 +6,29 @@
 #include "DrayfusWagner.h"
 #include "timer.h"
 #include "common.h"
+#include "Coo.h"
+void verify(unsigned int * DP, unsigned int * DP_d, unsigned int num_nodes, unsigned int num_subsets, unsigned int* allSubsets, unsigned int numberOfTerminals){
 
-void verify(unsigned int * DP, unsigned int * DP_d, unsigned int size){
-
-  for(int i = 0; i < size; ++i){
-  
-    if(DP[i] != DP_d[i])
-      printf("mismatch at %d\tDP: %u\tDP_d: %u\n", i, DP[i], DP_d[i]);
-
+  for(unsigned int v = 0; v < num_nodes; ++v) {
+    for (unsigned int subset = 0; subset < num_subsets; ++subset) {
+      if (DP[v * num_subsets + subset] != DP_d[v * num_subsets + subset]) {
+        printf("subset: %u: ", subset);
+        printSubsetByIndex(allSubsets,subset, numberOfTerminals);
+        printf("\n");
+        printf("mismatch at vertex v: %u\t, DP: %u\tDP_d: %u\n", v, DP[v * num_subsets + subset], DP_d[v * num_subsets + subset]);
+      }
+    }
   }
+}
+
+void verifyFlippedDP(unsigned int* DP, unsigned int* Dp_d, unsigned int num_nodes, unsigned int num_subsets) {
+  for(unsigned int v = 0; v < num_nodes; ++v) {
+    for (unsigned int subset = 0; subset < num_subsets; ++subset) {
+      if (DP[v * num_subsets + subset] != Dp_d[subset * num_nodes + v]) {
+        printf("mismatch at vertex v: %u\t, subset: %u \tDP: %u\tDP_d: %u\n", v, subset, DP[v * num_subsets + subset], Dp_d[subset * num_nodes + v]);
+      }
+    }
+  } 
 }
 
 int main(int argc, char** argv) {
@@ -24,9 +38,12 @@ int main(int argc, char** argv) {
 
     //Testing on a graph of 10 vertices
     const char* filename = "data/10.txt";
+
     CsrGraph* graph = readCSRgraph(filename);
-    unsigned int numberOfTerminals = 3;
-    unsigned int terminals[] = {2,3,5};
+
+
+    unsigned int numberOfTerminals = 5;
+    unsigned int terminals[] = {2,3,5,7,9};
 
     // Testing on a graph of 20 vertices
     /*
@@ -72,16 +89,19 @@ int main(int argc, char** argv) {
 
     printElapsedTime(timer, "GPU total time", CYAN);
     
-    verify(cpuResult, DP, graph->num_nodes * ((1 << numberOfTerminals) - 1));
+    verify(cpuResult, DP, graph->num_nodes , ((1 << numberOfTerminals) - 1), getSortedSubsets(numberOfTerminals), numberOfTerminals);
     
-    // CsrGraph* graph_opt1_d = createEmptyCSRGraphOnGPU(graph->num_nodes, graph->num_edges);
-    // copyCSRGraphToGPU(graph, graph_opt1_d);
-    // cudaDeviceSynchronize();
-    // unsigned int* DP_opt1 = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_nodes *  ((1 << numberOfTerminals) - 1) );
-    // startTime(&timer);
-    // DrayfusWagnerGPU_opt1(graph, graph_opt1_d, numberOfTerminals, terminals, DP_opt1, apsp);
-    // stopTime(&timer);
-    // printElapsedTime(timer, "GPU opt1 time", CYAN);
-    // verify(cpuResult, DP_opt1, graph->num_nodes * ((1 << numberOfTerminals) - 1));
+    CsrGraph* graph_opt1_d = createEmptyCSRGraphOnGPU(graph->num_nodes, graph->num_edges);
+    copyCSRGraphToGPU(graph, graph_opt1_d);
+    cudaDeviceSynchronize();
+
+
+
+    unsigned int* DP_opt1 = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_nodes *  ((1 << numberOfTerminals) - 1) );
+    startTime(&timer);
+    DrayfusWagnerGPU_o1(graph, graph_opt1_d, numberOfTerminals, terminals, DP_opt1, apsp);
+    stopTime(&timer);
+    printElapsedTime(timer, "GPU opt1 time", CYAN);
+    verifyFlippedDP(cpuResult, DP_opt1, graph->num_nodes, ((1 << numberOfTerminals) - 1));
     
 }

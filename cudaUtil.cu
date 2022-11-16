@@ -68,7 +68,7 @@ CsrGraph* cooToCSR(CooGraph* coo) {
     graph->row_offsets[graph->num_nodes] = sumBeforeNextRow;
 
     //Bin the edges
-    for (unsigned int i = 0; i < coo->num_nodes; ++i) {
+    for (unsigned int i = 0; i < coo->num_edges; ++i) {
         unsigned int row = coo->row_indices[i];
         unsigned int j = graph->row_offsets[row]++;
         graph->col_indices[j] = coo->col_indices[i];
@@ -139,4 +139,20 @@ void generateCOOGraph(unsigned int num_nodes) {
         edges[src][dst] = true;
     }
     fclose(file);
+}
+
+void printDP(unsigned int* DP,unsigned int num_nodes, unsigned int num_subsets) {
+    for(unsigned int v = 0; v < num_nodes; ++v) {
+        for(unsigned int s = 0; s < num_subsets; ++s) {
+            printf("(%u,%u): %u\t",v, s, DP[v * num_subsets + s]);
+        }
+        printf("\n");
+    }
+}
+
+void printSubsetByIndex(unsigned int* allSubsets, unsigned int index, unsigned int num_nodes) {
+    for(unsigned int i = 0; i < num_nodes; ++i) {
+        printf("%u\t",allSubsets[index * num_nodes + i]);
+    }
+    printf("\n");
 }
