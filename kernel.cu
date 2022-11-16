@@ -39,9 +39,10 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
     //TODO: try to do on shared memory
     unsigned int* subSubets = generateSubsetsGPU(subset, numTerminals);
-    
+   
     if (root < graph->num_nodes && (blockIdx.y + subsetsDoneSoFar < numSubsets) && threadIdx.x < num_sub_subsets) {
         for(unsigned int sub_sub_set = threadIdx.x * coarseFactor; sub_sub_set < threadIdx.x * coarseFactor + coarseFactor ; ++sub_sub_set) {
+            
             if (sub_sub_set < num_sub_subsets) {
                 unsigned int* subSubset = subSubets + (sub_sub_set * numTerminals);
                 if (!equals(subset, subSubset, numTerminals)) {
@@ -56,25 +57,12 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
                         unsigned int v_to_sub_Subset = DP[vertex * numSubsets + ss_index];
                         unsigned int v_S_minusSS = DP[vertex * numSubsets + sMinusSS_index]; 
                         unsigned int root_to_v = apsp[root * graph->num_nodes + vertex]; 
-                        
-
+                       
                         if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_v != UINT_MAX) {
 
                             unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
-
-                            if (root == 9 &&  sum == 19 && threadIdx) {
-                                printf("vertex: %u, subset:", vertex);
-                                for(unsigned int i = 0; i < numTerminals; ++i) {
-                                    printf("%u ", subset[i]);
-                                }
-                                printf("subsubset:");
-                                for(unsigned int i = 0; i < numTerminals; ++i) {
-                                    printf("%u ", subSubset[i]);
-                                }
-                                printf("\n");
-                            }
+                           
                             atomicMin(& DP[root * numSubsets + blockIdx.y + subsetsDoneSoFar], sum);
-
                         }   
                     }
                 }
@@ -133,7 +121,7 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
         if (MAX_THREADS < currSubsetNum)
             coarseFactor = (MAX_THREADS +  currSubsetNum - 1) / currSubsetNum;
         else {
-            numThreads = (k == numTerminals) ?  ((1 << k) - 1) : currSubsetNum;
+            numThreads = (1 << k) - 1;
             // numThreads = currSubsetNum;
             coarseFactor = 1;
         }

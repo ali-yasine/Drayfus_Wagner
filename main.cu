@@ -12,10 +12,7 @@ void verify(unsigned int * DP, unsigned int * DP_d, unsigned int num_nodes, unsi
   for(unsigned int v = 0; v < num_nodes; ++v) {
     for (unsigned int subset = 0; subset < num_subsets; ++subset) {
       if (DP[v * num_subsets + subset] != DP_d[v * num_subsets + subset]) {
-        printf("subset: %u: ", subset);
-        printSubsetByIndex(allSubsets,subset, numberOfTerminals);
-        printf("\n");
-        printf("mismatch at vertex v: %u\t, DP: %u\tDP_d: %u\n", v, DP[v * num_subsets + subset], DP_d[v * num_subsets + subset]);
+        printf("mismatch at vertex v: %u\t,subset:  DP: %u\tDP_d: %u\n", v, DP[v * num_subsets + subset], DP_d[v * num_subsets + subset]);
       }
     }
   }
@@ -34,7 +31,7 @@ void verifyFlippedDP(unsigned int* DP, unsigned int* Dp_d, unsigned int num_node
 int main(int argc, char** argv) {
     cudaDeviceSynchronize();
     setbuf(stdout, NULL);
-
+    unsigned int num_nodes = argc > 1 ;
 
     //Testing on a graph of 10 vertices
     const char* filename = "data/10.txt";

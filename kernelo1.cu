@@ -57,7 +57,7 @@ __global__ void DW_kernel_o1(CsrGraph* graph, unsigned int numTerminals, unsigne
 
                             unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
                             atomicMin(& DP[ ( blockIdx.y + subsetsDoneSoFar) * graph->num_nodes + root], sum);
-
+                            
                         }   
                     }
                 }
@@ -113,7 +113,7 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
         if (MAX_THREADS < currSubsetNum)
             coarseFactor = (MAX_THREADS +  currSubsetNum - 1) / currSubsetNum;
         else {
-            numThreads = (k == numTerminals) ?  ((1 << k) - 1) : currSubsetNum;
+            numThreads = (1 << k) - 1;
             // numThreads = currSubsetNum;
             coarseFactor = 1;
         }
