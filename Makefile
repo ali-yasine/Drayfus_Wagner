@@ -1,6 +1,6 @@
 
 NVCC        = nvcc
-NVCC_FLAGS  = -O3
+NVCC_FLAGS  = -O0 -g -G
 OBJ         = main.o kernel.o kernelo1.o cudaUtil.o
 EXE         = dw
 

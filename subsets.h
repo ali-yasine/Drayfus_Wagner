@@ -33,9 +33,9 @@ __host__ static  unsigned int* generateSubsets(unsigned int* terminals, unsigned
     return result;
 }
 
-__device__ static unsigned int* generateSubsetsGPU(unsigned int* terminals, unsigned int size) {
+__device__ static void generateSubsetsGPU(unsigned int* terminals, unsigned int size, unsigned int* result) {
     unsigned int num_ones = 0;
-    unsigned int* result, *decimalSubsets;
+    unsigned int* decimalSubsets;
 
     for(unsigned int i = 0; i < size; ++i){
         if (terminals[i])
@@ -44,7 +44,6 @@ __device__ static unsigned int* generateSubsetsGPU(unsigned int* terminals, unsi
     
     unsigned int numSubsets = (1 << num_ones) - 1;
 
-    cudaMalloc(&result, numSubsets * size * sizeof(unsigned int));
     cudaMalloc(&decimalSubsets, numSubsets * sizeof(unsigned int));
 
     unsigned int decimalVal = binaryToDecimal(terminals, size);
@@ -52,14 +51,14 @@ __device__ static unsigned int* generateSubsetsGPU(unsigned int* terminals, unsi
     for(unsigned int s = decimalVal; s; s = (s - 1) & decimalVal){
         unsigned int* subset = decimalToBinaryGPU(s, size);
         for(unsigned int i = 0; i < size; ++i){
-            result[currSubset * size + i] = subset[i];
+            result[currSubset * size + i] 
+            = subset[i];
         }
         currSubset++;
         cudaFree(subset);
         
     }
     cudaFree(decimalSubsets);
-    return result;
 }
 
 
@@ -98,7 +97,10 @@ __host__ static  unsigned int* subsetK(unsigned int* set, unsigned int k, unsign
 }
 
 __device__ static   unsigned int* subsetKGPU(unsigned int* set, unsigned int k, unsigned int size) {
-    unsigned int* allSubsets = generateSubsetsGPU(set, size);
+
+    unsigned int* allSubsets;
+    cudaMalloc( (void**) &allSubsets, ((1 << k) - 1) * size * sizeof(unsigned int));
+    generateSubsetsGPU(set, size, allSubsets);
     unsigned int* result;
 
     unsigned int num_ones = 0;
