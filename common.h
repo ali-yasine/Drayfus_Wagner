@@ -20,5 +20,7 @@ CooGraph* readCOOGraph(const char* filename);
 void printDP(unsigned int* DP,unsigned int num_nodes, unsigned int num_subsets);
 
 void printSubsetByIndex(unsigned int* allSubsets, unsigned int index, unsigned int num_nodes);
-    
+
+void generateCOOGraph(unsigned int num_nodes);
+
 #endif

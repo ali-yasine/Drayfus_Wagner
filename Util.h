@@ -56,9 +56,7 @@ __host__ static unsigned int* setDifference(unsigned int* set1, unsigned int* se
     }
     return set1MinusSet2;
 }
-__device__ static  unsigned int* setDifferenceGPU(unsigned int* set1, unsigned int* set2, unsigned int size){
-    unsigned int* set1MinusSet2;
-    cudaMalloc(&set1MinusSet2, size * sizeof(unsigned int));
+__device__ static void setDifferenceGPU(unsigned int* set1, unsigned int* set2, unsigned int size, unsigned int* set1MinusSet2){
 
     for (unsigned int i = 0; i < size; i++){
         if (set1[i] == 1 && set2[i] == 0){
@@ -68,7 +66,6 @@ __device__ static  unsigned int* setDifferenceGPU(unsigned int* set1, unsigned i
             set1MinusSet2[i] = 0;
         }
     }
-    return set1MinusSet2;
 }
 
 __device__ __host__ static  bool contains(unsigned int* set, unsigned int N, unsigned int vertex) {

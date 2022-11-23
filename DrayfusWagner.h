@@ -80,23 +80,6 @@ static unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals
                             if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_V != UINT_MAX) {
                                 unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_V;
                                 if (sum < curr_cost) {
-                                    if (sum == 15 && root == 9 ) {
-                                        std::cout << "subset " << subset << ": " ;
-                                        for(unsigned int i = 0; i < numTerminals; ++i)
-                                            std::cout << currSubset[i] << " ";
-                                        std::cout << "\n";
-                                        std::cout << "vertex: " << vertex << std::endl;
-                                        std::cout << "ss_index: " << ss_index << std::endl;
-                                        std::cout << "sMinusSS_index: " << sMinusSS_index << std::endl;
-                                        std::cout << "v_to_sub_Subset: " << v_to_sub_Subset << std::endl;
-                                        std::cout << "v_S_minusSS: " << v_S_minusSS << std::endl;
-                                        std::cout << "root_to_V: " << root_to_V << std::endl;
-                                        std::cout << "sum: " << sum << std::endl;
-                                        std::cout << "curr_cost: " << curr_cost << std::endl;
-                                        std::cout << "-----------------------" << std::endl;
-
-
-                                    }
                                     DP[root * total_subset_count + subset] = sum;
                                     curr_cost = sum;
                                 }

@@ -29,26 +29,19 @@ void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSub
     }
 }
 
-__global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets, unsigned int numSubsets, unsigned int coarseFactor, unsigned int k, unsigned int subsetsDoneSoFar) {
+__global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets, unsigned int numSubsets, unsigned int coarseFactor, unsigned int k, unsigned int subsetsDoneSoFar, unsigned int* subSubsets) {
 
     unsigned int root = blockIdx.x;
     unsigned int* subset = allSubsets + ((subsetsDoneSoFar + blockIdx.y ) * numTerminals);
     
-    unsigned int num_ones = 0;
-    for(unsigned int i = 0; i < numTerminals; ++i){
-        num_ones += subset[i];
-    }
-    if (num_ones != k ) {
-        printf("num_ones = %u, k = %u, tix = %u, subsetsDoneSoFar = %u, blockIdx.y = %u, blockIdx.x = %u\n", num_ones, k, threadIdx.x, subsetsDoneSoFar, blockIdx.y, blockIdx.x);  
+    unsigned int num_sub_subsets = (1 << k) - 1;
+    unsigned int* subSubets = subSubsets + num_sub_subsets * numTerminals * blockIdx.y;
+    if ( threadIdx.x == 0) {
+        generateSubsetsGPU(subset, numTerminals, subSubets);
     }
     __syncthreads();
-    unsigned int num_sub_subsets = (1 << k) - 1;
-    
-    //TODO: try to do on shared memory
-    unsigned int* subSubets; 
-    cudaMalloc((void**) &subSubets, num_sub_subsets * numTerminals * sizeof(unsigned int));
-    generateSubsetsGPU(subset, numTerminals, subSubets);
-   
+    unsigned int* sMinusSS;
+    cudaMalloc(&sMinusSS, numTerminals * sizeof(unsigned int));
     if (root < graph->num_nodes && (blockIdx.y + subsetsDoneSoFar < numSubsets) && threadIdx.x < num_sub_subsets) {
         for(unsigned int sub_sub_set = threadIdx.x * coarseFactor; sub_sub_set < threadIdx.x * coarseFactor + coarseFactor ; ++sub_sub_set) {
             
@@ -58,7 +51,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
 
                     unsigned int ss_index = getSubsetIndex(subSubset, numTerminals, allSubsets);
                     
-                    unsigned int* sMinusSS = setDifferenceGPU(subset, subSubset, numTerminals);
+                    setDifferenceGPU(subset, subSubset, numTerminals, sMinusSS);
                     
                     unsigned int sMinusSS_index = getSubsetIndex(sMinusSS, numTerminals, allSubsets);
 
@@ -79,6 +72,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
             }
         }
     }
+    cudaFree(sMinusSS);
     cudaFree(subSubets);
 }
 
@@ -131,6 +125,7 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
     startTime(&timer);
     //launch kernel
     for(unsigned int k = 2; k <= numTerminals; k++) {
+
         unsigned int numThreads = MAX_THREADS;
         unsigned int coarseFactor;
         unsigned int currSubsetNum = choose(numTerminals, k);
@@ -140,13 +135,23 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
             numThreads = (1 << k) - 1;
             coarseFactor = 1;
         }
+        unsigned int* subSubets;
+        cudaMalloc((void**) &subSubets, ((1 << k) - 1) * currSubsetNum * numTerminals * sizeof(unsigned int));
+        
+        err = cudaGetLastError();
+        if (err != cudaSuccess) 
+            printf("subSubets malloc Error: %s in launch num: %u and subsetsSoFar: %u\n", cudaGetErrorString(err), k - 1, subsetsDoneSoFar);
+        
+        cudaDeviceSynchronize();
+
         dim3 numBlocks (graph_cpu->num_nodes, currSubsetNum);
-        DW_kernel<<<numBlocks, numThreads>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
+        DW_kernel<<<numBlocks, numThreads>>>(graph, numTerminals, terminals_d, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar, subSubets);
         err = cudaGetLastError();
         if (err != cudaSuccess) 
             printf("Kernel Error: %s in launch num: %u and subsetsSoFar: %u\n", cudaGetErrorString(err), k - 1, subsetsDoneSoFar);
+            
+        cudaFree(subSubets);
         cudaDeviceSynchronize();
-        
         subsetsDoneSoFar += currSubsetNum;
     }
     cudaDeviceSynchronize();
@@ -155,6 +160,7 @@ void DrayfusWagnerGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerm
 
     //copy data back to host
     startTime(&timer);
+    
     cudaMemcpy(DP, DP_d, sizeof(unsigned int) * graph_cpu->num_nodes * numSubsets, cudaMemcpyDeviceToHost);
     err = cudaGetLastError();
     if (err != cudaSuccess) 
