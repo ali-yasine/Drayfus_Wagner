@@ -34,7 +34,9 @@ int main(int argc, char** argv) {
   
   unsigned int num_nodes = (argc > 1) ?  atoi(argv[1]) : 300;
   unsigned int numberOfTerminals = (argc > 2) ?  atoi(argv[2]) : 8;
+  
   unsigned int* terminals = (unsigned int*) malloc(sizeof(unsigned int) * numberOfTerminals);
+
   for (unsigned int i = 0; i < numberOfTerminals; ++i) {
     terminals[i] = rand() % num_nodes;
   }

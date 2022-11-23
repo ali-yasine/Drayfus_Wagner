@@ -150,7 +150,7 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
     }
     cudaDeviceSynchronize();
     stopTime(&timer);
-    printElapsedTime(timer, "Kernel time: ", GREEN);
+    printElapsedTime(timer, "Kernel opt1 time: ", GREEN);
 
     //copy data back to host
     startTime(&timer);

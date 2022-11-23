@@ -1,1 +1,3 @@
-Change graph in main.cpp then compile and run it using g++ 
+Compile using make then run the executable and optionally pass it the size of the graph(300 is default) and the number of terminals(8 is default)
+
+example: ./dw 400 10
