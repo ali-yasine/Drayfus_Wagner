@@ -94,10 +94,12 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
     cudaMalloc((void**) &apsp_d, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes);
     cudaMalloc((void**) &allSubsets_d, sizeof(unsigned int) * numSubsets * numTerminals);
     cudaMalloc((void**) &terminals_d, sizeof(unsigned int) * numTerminals);
+
     err = cudaGetLastError();
     if (err != cudaSuccess) 
         printf("Allocation Error: %s\n", cudaGetErrorString(err));
     cudaDeviceSynchronize();
+
     stopTime(&timer);
     printElapsedTime(timer, "Allocation time: ");
     
@@ -119,7 +121,11 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
 
     unsigned int subsetsDoneSoFar = numTerminals;
 
+    cudaDeviceProp* prop = (cudaDeviceProp*) malloc(sizeof(cudaDeviceProp));
+    cudaGetDeviceProperties(prop, 0);
+
     startTime(&timer);
+
     //launch kernel
     for(unsigned int k = 2; k <= numTerminals; ++k) {
 
@@ -130,10 +136,8 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
             coarseFactor = (MAX_THREADS +  currSubsetNum - 1) / currSubsetNum;
         else {
             numThreads = (1 << k) - 1;
-            // numThreads = currSubsetNum;
             coarseFactor = 1;
         }
-        
         unsigned int* subSubets;
         cudaMalloc((void**) &subSubets, ((1 << k) - 1) * currSubsetNum * numTerminals * sizeof(unsigned int));
 
@@ -165,7 +169,6 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
     cudaFree(apsp_d);
     cudaFree(allSubsets_d);
     cudaFree(terminals_d);
-
     cudaDeviceSynchronize();
 
     free(allSubsets);
