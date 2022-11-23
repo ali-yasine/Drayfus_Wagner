@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __FLOYDWARSHALL_H_
+#define __FLOYDWARSHALL_H_
 #include "csr.h"
 #include <limits.h>
 #include <iostream>
@@ -17,7 +18,7 @@ unsigned int* floydWarshall(CsrGraph graph){
             if (i == j)
                 d[i * graph.num_nodes + j] = 0;
             else
-                d[i * graph.num_nodes + j] = getEdgeWeight(graph, i, j);
+                d[i * graph.num_nodes + j] = graph.getEdgeWeight(i, j);
         }
     }
 
@@ -41,3 +42,4 @@ unsigned int* floydWarshall(CsrGraph graph){
     return d;
 }
 #undef min
+#endif

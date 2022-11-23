@@ -6,7 +6,7 @@
 #include <iostream>
 #include <limits.h>
 
-static unsigned int* DrayfusWagner(CsrGraph graph, unsigned int numTerminals, unsigned int* terminalMap, unsigned int* apsp) {
+static unsigned int* DrayfusWagner_cpu(CsrGraph graph, unsigned int numTerminals, unsigned int* terminalMap, unsigned int* apsp) {
     
     unsigned int total_subset_count = (1 << numTerminals) - 1;
 
