@@ -8,24 +8,34 @@
 #include "common.h"
 #include "Coo.h"
 void verify(unsigned int * DP, unsigned int * DP_d, unsigned int num_nodes, unsigned int num_subsets, unsigned int* allSubsets, unsigned int numberOfTerminals){
-
+  unsigned int num_mismatch = 0;
   for(unsigned int v = 0; v < num_nodes; ++v) {
     for (unsigned int subset = 0; subset < num_subsets; ++subset) {
       if (DP[v * num_subsets + subset] != DP_d[v * num_subsets + subset]) {
-        printf("mismatch at vertex v: %u,subset: %u DP: %u\tDP_d: %u\n", v, subset, DP[v * num_subsets + subset], DP_d[v * num_subsets + subset]);
+        num_mismatch++;
+        if (num_mismatch < 10)
+          printf("mismatch at vertex v: %u,subset: %u DP: %u\tDP_d: %u\n", v, subset, DP[v * num_subsets + subset], DP_d[v * num_subsets + subset]);
       }
     }
+  }
+  if( num_mismatch > 0) {
+    printf("Number of mismatches: %u\n", num_mismatch);
   }
 }
 
 void verifyFlippedDP(unsigned int* DP, unsigned int* Dp_d, unsigned int num_nodes, unsigned int num_subsets) {
+  unsigned int num_mismatch = 0;
   for(unsigned int v = 0; v < num_nodes; ++v) {
     for (unsigned int subset = 0; subset < num_subsets; ++subset) {
       if (DP[v * num_subsets + subset] != Dp_d[subset * num_nodes + v]) {
-        printf("mismatch at vertex v: %u\t, subset: %u \tDP: %u\tDP_d: %u\n", v, subset, DP[v * num_subsets + subset], Dp_d[subset * num_nodes + v]);
+        num_mismatch++;
+        if (num_mismatch < 10)
+          printf("mismatch at vertex v: %u\t, subset: %u \tDP: %u\tDP_d: %u\n", v, subset, DP[v * num_subsets + subset], Dp_d[subset * num_nodes + v]);
       }
     }
   } 
+  if( num_mismatch > 0) 
+    printf("Number of mismatches: %u\n", num_mismatch);
 }
 
 int main(int argc, char** argv) {
