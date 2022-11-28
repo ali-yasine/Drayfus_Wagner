@@ -2,11 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "DrayfusWagner.h"
 #include "timer.h"
 #include "common.h"
 #include "Coo.h"
+
+
 void verify(unsigned int * DP, unsigned int * DP_d, unsigned int num_nodes, unsigned int num_subsets, unsigned int* allSubsets, unsigned int numberOfTerminals){
   unsigned int num_mismatch = 0;
   for(unsigned int v = 0; v < num_nodes; ++v) {
@@ -33,10 +36,13 @@ void verifyFlippedDP(unsigned int* DP, unsigned int* Dp_d, unsigned int num_node
           printf("mismatch at vertex v: %u\t, subset: %u \tDP: %u\tDP_d: %u\n", v, subset, DP[v * num_subsets + subset], Dp_d[subset * num_nodes + v]);
       }
     }
-  } 
+  }
+
   if( num_mismatch > 0) 
     printf("Number of mismatches: %u\n", num_mismatch);
 }
+
+
 
 int main(int argc, char** argv) {
   cudaDeviceSynchronize();
@@ -44,7 +50,8 @@ int main(int argc, char** argv) {
   
   unsigned int num_nodes = (argc > 1) ?  atoi(argv[1]) : 300;
   unsigned int numberOfTerminals = (argc > 2) ?  atoi(argv[2]) : 8;
-  
+  unsigned int maxCPUTime = (argc > 3) ?  atoi(argv[3]) * 1000 : 300000;
+
   unsigned int* terminals = (unsigned int*) malloc(sizeof(unsigned int) * numberOfTerminals);
 
   for (unsigned int i = 0; i < numberOfTerminals; ++i) {
@@ -61,21 +68,26 @@ int main(int argc, char** argv) {
   
   startTime(&timer);
   printf("Computing Floyd-Warshall...\n");
-  unsigned int* apsp = floydWarshall(*graph);
+  unsigned int* apsp = floydWarshall(graph);
   stopTime(&timer);
   printElapsedTime(timer, "Floyd-Warshall");
+
+  struct timespec max_wait;
+  memset(&max_wait, 0, sizeof(max_wait));
+  max_wait.tv_sec = maxCPUTime;
   
+
   startTime(&timer);
   
   printf("Running CPU version\n");
 
-  unsigned int* cpuResult = DrayfusWagner_cpu(*graph, numberOfTerminals, terminals, apsp);
+  unsigned int* cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals, apsp);
   
   stopTime(&timer);
   printElapsedTime(timer, "CPU time", CYAN);
   
   printf("Running GPU version\n");
-  // startTime(&timer);
+
   // Allocate GPU memory
   CsrGraph* graph_d = createEmptyCSRGraphOnGPU(graph->num_nodes, graph->num_edges);
 
@@ -94,35 +106,30 @@ int main(int argc, char** argv) {
   printElapsedTime(timer, "GPU total time", CYAN);
 
   verify(cpuResult, DP, graph->num_nodes , ((1 << numberOfTerminals) - 1), getSortedSubsets(numberOfTerminals), numberOfTerminals);
-  free(DP);
-
-  CsrGraph* graph_opt1_d = createEmptyCSRGraphOnGPU(graph->num_nodes, graph->num_edges);
-  copyCSRGraphToGPU(graph, graph_opt1_d);
-  cudaDeviceSynchronize();
 
 
-
-  unsigned int* DP_opt1 = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_nodes *  ((1 << numberOfTerminals) - 1) );
+  //OPT 1 
   startTime(&timer);
-  DrayfusWagnerGPU_o1(graph, graph_opt1_d, numberOfTerminals, terminals, DP_opt1, apsp);
-  stopTime(&timer);
-  printElapsedTime(timer, "GPU opt1 time", CYAN);
-  verifyFlippedDP(cpuResult, DP_opt1, graph->num_nodes, ((1 << numberOfTerminals) - 1));
-  free(DP_opt1);
 
-  CsrGraph* graph_opt2_d = createEmptyCSRGraphOnGPU(graph->num_nodes, graph->num_edges);
-  copyCSRGraphToGPU(graph, graph_opt2_d);
-  cudaDeviceSynchronize(); 
-  unsigned int* DP_opt2 = (unsigned int*) malloc(sizeof(unsigned int) * graph->num_nodes *  ((1 << numberOfTerminals) - 1) );
+  DrayfusWagnerGPU_o1(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
   
+  stopTime(&timer);
+
+  printElapsedTime(timer, "GPU opt1 time", CYAN);
+  verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+
+  //OPT 2
   startTime(&timer);
-  DrayfusWagnerGPU_o2(graph, graph_opt2_d, numberOfTerminals, terminals, DP_opt2, apsp);
+  
+  DrayfusWagnerGPU_o2(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
+  
   stopTime(&timer);
   printElapsedTime(timer, "GPU opt2 time", CYAN);
-  verifyFlippedDP(cpuResult, DP_opt2, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+  verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
 
 
-  free(DP_opt2);
   free(apsp);
   free(cpuResult);
+  free(DP);
+  
 }
