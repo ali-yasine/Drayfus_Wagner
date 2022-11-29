@@ -27,6 +27,12 @@ __device__ static unsigned int* decimalToBinaryGPU(unsigned int decimal, unsigne
     }
     return result;
 }
+__device__ static void decimalToBinaryGPUO3(unsigned int decimal, unsigned int binarySize, unsigned int* result) {
+    
+    for (unsigned int i = 0; i < binarySize; ++i) {
+        result[i] = (decimal >> i) & 1;
+    }
+}
 
 __device__ __host__ static unsigned int choose(unsigned int n, unsigned int k){
     if (k > n)

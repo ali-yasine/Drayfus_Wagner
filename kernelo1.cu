@@ -6,7 +6,7 @@
 #define MAX_THREADS 1024
 
 
-void handleSingletons_o1(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
+static void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
     for(unsigned int vertex = 0; vertex < num_nodes; ++vertex) {
         for(unsigned int subset = 0; subset < numTerminals; ++subset) {
             
@@ -89,7 +89,7 @@ void DrayfusWagnerGPU_o1(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
     for(unsigned int i = 0; i < graph_cpu->num_nodes * numSubsets; ++i)
       DP[i] = UINT_MAX;
 
-    handleSingletons_o1(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
+    handleSingletons(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
     startTime(&timer);
 
 

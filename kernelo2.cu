@@ -7,7 +7,7 @@
 #define MAX_SHARED_MEM 12288 
 
 
-void handleSingletons_o2(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
+static void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets , unsigned int numTerminals, unsigned int num_nodes, unsigned int* terminals) {
     for(unsigned int vertex = 0; vertex < num_nodes; ++vertex) {
         for(unsigned int subset = 0; subset < numTerminals; ++subset) {
             
@@ -101,7 +101,7 @@ void DrayfusWagnerGPU_o2(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
     for(unsigned int i = 0; i < graph_cpu->num_nodes * numSubsets; ++i)
       DP[i] = UINT_MAX;
 
-    handleSingletons_o2(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
+    handleSingletons(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
     
 
     startTime(&timer);
@@ -175,7 +175,7 @@ void DrayfusWagnerGPU_o2(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numT
         cudaDeviceSynchronize();
     }
     stopTime(&timer);
-    printElapsedTime(timer, "Kernel time: ", GREEN);
+    printElapsedTime(timer, "Kernel opt2 time: ", GREEN);
 
     //copy data back to host
     startTime(&timer);

@@ -50,20 +50,23 @@ int main(int argc, char** argv) {
   
   unsigned int num_nodes = (argc > 1) ?  atoi(argv[1]) : 300;
   unsigned int numberOfTerminals = (argc > 2) ?  atoi(argv[2]) : 8;
-  unsigned int maxCPUTime = (argc > 3) ?  atoi(argv[3]) * 1000 : 300000;
+  unsigned int runCPU = (argc > 3) ?  atoi(argv[3]) : 1;
 
   unsigned int* terminals = (unsigned int*) malloc(sizeof(unsigned int) * numberOfTerminals);
 
-  for (unsigned int i = 0; i < numberOfTerminals; ++i) {
-    terminals[i] = rand() % num_nodes;
-  }
+  
   generateCOOGraph(num_nodes);
 
   
   char filename[100];
+  // sprintf(filename, "data/michaeljackson.txt", num_nodes);
   sprintf(filename, "data/%u.txt", num_nodes);
   CsrGraph* graph = readCSRgraph(filename);
- 
+  for (unsigned int i = 0; i < numberOfTerminals; ++i) {
+    terminals[i] = rand() % graph->num_nodes;
+  }
+  terminals[0] = 0;
+
   Timer timer;
   
   startTime(&timer);
@@ -71,21 +74,19 @@ int main(int argc, char** argv) {
   unsigned int* apsp = floydWarshall(graph);
   stopTime(&timer);
   printElapsedTime(timer, "Floyd-Warshall");
-
-  struct timespec max_wait;
-  memset(&max_wait, 0, sizeof(max_wait));
-  max_wait.tv_sec = maxCPUTime;
   
 
-  startTime(&timer);
-  
-  printf("Running CPU version\n");
+  unsigned int* cpuResult;
+  if (runCPU) {
+    startTime(&timer);
+    
+    printf("Running CPU version\n");
 
-  unsigned int* cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals, apsp);
-  
-  stopTime(&timer);
-  printElapsedTime(timer, "CPU time", CYAN);
-  
+    cpuResult = DrayfusWagner_cpu(graph, numberOfTerminals, terminals, apsp);
+    
+    stopTime(&timer);
+    printElapsedTime(timer, "CPU time", CYAN);
+  }
   printf("Running GPU version\n");
 
   // Allocate GPU memory
@@ -104,8 +105,8 @@ int main(int argc, char** argv) {
   stopTime(&timer);
 
   printElapsedTime(timer, "GPU total time", CYAN);
-
-  verify(cpuResult, DP, graph->num_nodes , ((1 << numberOfTerminals) - 1), getSortedSubsets(numberOfTerminals), numberOfTerminals);
+  if (runCPU)
+    verify(cpuResult, DP, graph->num_nodes , ((1 << numberOfTerminals) - 1), getSortedSubsets(numberOfTerminals), numberOfTerminals);
 
 
   //OPT 1 
@@ -116,7 +117,8 @@ int main(int argc, char** argv) {
   stopTime(&timer);
 
   printElapsedTime(timer, "GPU opt1 time", CYAN);
-  verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+  if (runCPU)
+    verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
 
   //OPT 2
   startTime(&timer);
@@ -125,11 +127,23 @@ int main(int argc, char** argv) {
   
   stopTime(&timer);
   printElapsedTime(timer, "GPU opt2 time", CYAN);
-  verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
 
+  if (runCPU)
+    verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+
+  //OPT 3
+  startTime(&timer);
+
+  DrayfusWagnerGPU_o3(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
+  
+  stopTime(&timer);
+  printElapsedTime(timer, "GPU opt3 time", CYAN);
+
+  if (runCPU)
+    verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
 
   free(apsp);
-  free(cpuResult);
   free(DP);
-  
+  free(terminals);
+
 }
