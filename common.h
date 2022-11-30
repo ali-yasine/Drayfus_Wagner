@@ -30,4 +30,10 @@ __global__ void DW_kernel_o1(CsrGraph* graph, unsigned int numTerminals, unsigne
 
 void DrayfusWagnerGPU_o3(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp);
 
+void DrayfusWagnerGPU_o4(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp);
+
+__global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets, unsigned int numSubsets, unsigned int coarseFactor, unsigned int k, unsigned int subsetsDoneSoFar, unsigned int* subSubsets);
+
+void DrayfusWagnerDecimalsGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int numTerminals, unsigned int* terminals, unsigned int* DP, unsigned int* apsp);
+
 #endif

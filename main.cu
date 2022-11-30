@@ -10,7 +10,7 @@
 #include "Coo.h"
 
 
-void verify(unsigned int * DP, unsigned int * DP_d, unsigned int num_nodes, unsigned int num_subsets, unsigned int* allSubsets, unsigned int numberOfTerminals){
+void verify(unsigned int * DP, unsigned int * DP_d, unsigned int num_nodes, unsigned int num_subsets){
   unsigned int num_mismatch = 0;
   for(unsigned int v = 0; v < num_nodes; ++v) {
     for (unsigned int subset = 0; subset < num_subsets; ++subset) {
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 
   printElapsedTime(timer, "GPU total time", CYAN);
   if (runCPU)
-    verify(cpuResult, DP, graph->num_nodes , ((1 << numberOfTerminals) - 1), getSortedSubsets(numberOfTerminals), numberOfTerminals);
+    verify(cpuResult, DP, graph->num_nodes , ((1 << numberOfTerminals) - 1));
 
 
   //OPT 1 
@@ -141,7 +141,18 @@ int main(int argc, char** argv) {
 
   if (runCPU)
     verifyFlippedDP(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+  //OPT 4
+  startTime(&timer);
 
+  DrayfusWagnerGPU_o4(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
+
+  stopTime(&timer);
+  printElapsedTime(timer, "GPU opt4 time", CYAN);
+  if (runCPU)
+    verify(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+
+  DrayfusWagnerDecimalsGPU(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
+  
   free(apsp);
   free(DP);
   free(terminals);

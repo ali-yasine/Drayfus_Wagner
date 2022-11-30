@@ -214,7 +214,7 @@ __device__ __host__ static  unsigned int getSubsetIndex(unsigned int* set, unsig
                 return i;
         }
     }
-    return -1;
+    return UINT_MAX;
 }
 
 __device__ static void generateSubsetsGPUO3(unsigned int* terminals, unsigned int size, unsigned int* result) {
