@@ -40,6 +40,7 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
         generateSubsetsGPU(subset, numTerminals, subSubets);
     }
     __syncthreads();
+    
     unsigned int* sMinusSS;
     cudaMalloc(&sMinusSS, numTerminals * sizeof(unsigned int));
     if (root < graph->num_nodes && (blockIdx.y + subsetsDoneSoFar) * coarseFactor < numSubsets) {
@@ -75,7 +76,6 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
         }
     }
     cudaFree(sMinusSS);
-    cudaFree(subSubets);
 }
 
 
