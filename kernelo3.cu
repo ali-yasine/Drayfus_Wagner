@@ -46,7 +46,8 @@ __global__ void DW_kernel_o3(CsrGraph* graph, unsigned int numTerminals, unsigne
     blockSubset_s = subSubSets_s;
 
     unsigned int sMinusSS[20];
-    
+    unsigned int threadMin = UINT_MAX;
+
     if (root < graph->num_nodes && ((blockIdx.y + subsetsDoneSoFar) * coarseFactor < numSubsets)) {
 
         for(unsigned int sub_sub_set = threadIdx.x * coarseFactor; sub_sub_set < threadIdx.x * coarseFactor + coarseFactor ; ++sub_sub_set) {
@@ -72,17 +73,16 @@ __global__ void DW_kernel_o3(CsrGraph* graph, unsigned int numTerminals, unsigne
 
                         if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_v != UINT_MAX) {
                             unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
-                            atomicMin(blockDp_s, sum);         
+                            if (sum < threadMin) {
+                                threadMin = sum;
+                            }
                         }   
                     }
                 }
             }
         }
     }
-    __syncthreads();
-    
-    if (threadIdx.x == 0) 
-        DP[(blockIdx.y + subsetsDoneSoFar) * graph->num_nodes + root] = blockDp_s[0];
+    atomicMin(&DP[(blockIdx.y + subsetsDoneSoFar) * graph->num_nodes + root], threadMin);
 }
 
 
