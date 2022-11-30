@@ -75,7 +75,6 @@ __global__ void DW_kernel(CsrGraph* graph, unsigned int numTerminals, unsigned i
         }
     }
     cudaFree(sMinusSS);
-    cudaFree(subSubets);
 }
 
 

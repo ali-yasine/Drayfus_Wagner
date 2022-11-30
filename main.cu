@@ -151,8 +151,6 @@ int main(int argc, char** argv) {
   if (runCPU)
     verify(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
 
-  DrayfusWagnerDecimalsGPU(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
-  
   free(apsp);
   free(DP);
   free(terminals);
