@@ -1,3 +1,6 @@
 Compile using make then run the executable and optionally pass it the size of the graph(300 is default) and the number of terminals(8 is default)
+3rd optional parameter is choosing to run the algorithm on cpu or not (1 or 0 default is 1)
 
-example: ./dw 400 10
+example: ./dw 400 10 
+         ./dw 2500 8 0 (doesn't run on cpu) 
+         
