@@ -9,6 +9,17 @@
 #define MAX_TERMINALS 25
 
 static bool compare(unsigned int a, unsigned int b){
+    
+    if (__builtin_popcount(a) == __builtin_popcount(b)) {
+        for(unsigned int i = 0; i < 32; ++i) {
+            if ((a & (1 << i)) && ! (b & (1 << i))) {
+                return true;
+            }
+            if (!(a & (1 << i)) && (b & (1 << i))) {
+                return false;
+            }
+        }
+    }
     return __builtin_popcount(a) < __builtin_popcount(b);
 }
 
@@ -25,19 +36,18 @@ static void handleSingletons(unsigned int* DP, unsigned int* apsp, unsigned int*
                 subsetVal >>= 1;
                 index++;
             }
-            DP[vertex * totalSubsetCount + subset] = apsp[vertex * num_nodes + terminals[index - 1]];   
+            DP[vertex * totalSubsetCount + subset] = apsp[vertex * num_nodes + terminals[numTerminals - index]];   
         }
     }
 
 }
 
-static __device__ unsigned int getSubsetIndexDecimal(unsigned int subset, unsigned int* allSubsets) {
-    for(unsigned int i = 0; i < (1 << subset); ++i) {
+static __device__ unsigned int getSubsetIndexDecimal(unsigned int subset, unsigned int* allSubsets, unsigned int subsetsNum) {
+    for(unsigned int i = 0; i < subsetsNum; ++i) {
         if (allSubsets[i] == subset) {
             return i;
         }
     }
-    printf("subset not found\n");
     return UINT_MAX;
 }
 
@@ -45,27 +55,23 @@ static  unsigned int* getSortedSubsetsDecimal(unsigned int numTerminals) {
     unsigned int totalSubsetCount = (1 << numTerminals) - 1;
     unsigned int* result = (unsigned int*) malloc(sizeof(unsigned int) * totalSubsetCount);
 
-    for(unsigned int i = 1; i < totalSubsetCount; ++i) {
-        result[i] = i;
+    for(unsigned int i = 1; i < totalSubsetCount + 1; ++i) {
+        result[i - 1] = i;
     }
     std::sort(result, result + totalSubsetCount, compare);
     return result;
 }
 
-static __device__ void generateDecimalSubsets(unsigned int subset, unsigned int* result, unsigned int k) {
+static __device__ void generateDecimalSubsets(unsigned int subset, unsigned int* result) {
     unsigned int count = 0;
     for(unsigned int set = subset; set; set = (set - 1) & subset) {
-        if (count > ((1 >> k ) - 1)) {
-            printf("count: %u\n", count);
-        }
-        result[count++] 
-        = set;
+        result[count++] = set;
     }
 }
 
 __global__ void DW_Decimal_kernel(CsrGraph* graph, unsigned int* DP, unsigned int* apsp, unsigned int* allSubsets, unsigned int numSubsets, unsigned int coarseFactor, unsigned int k,  unsigned int subsetsDoneSoFar) {
     
-    extern __shared__ unsigned int subSubSets_s[];
+    __shared__ unsigned int subSubSets_s[MAX_SHARED_MEM];
     
     unsigned int root = blockIdx.x;
     unsigned int subset = allSubsets[blockIdx.y + subsetsDoneSoFar];
@@ -74,12 +80,13 @@ __global__ void DW_Decimal_kernel(CsrGraph* graph, unsigned int* DP, unsigned in
     unsigned int num_sub_subsets = (1 << k) - 1;
 
     if (threadIdx.x == 0) {
-        generateDecimalSubsets(subset, subSubSets_s, k);
+        generateDecimalSubsets(subset, subSubSets_s);
     }
     __syncthreads();
+
     if (root < graph->num_nodes && (blockIdx.y + subsetsDoneSoFar) * coarseFactor < numSubsets) {
 
-        for(unsigned int sub_sub_set = threadIdx.x * coarseFactor; sub_sub_set < threadIdx.x * coarseFactor + coarseFactor ; ++sub_sub_set) {
+        for(unsigned int sub_sub_set = threadIdx.x * coarseFactor; sub_sub_set < threadIdx.x * coarseFactor + coarseFactor; ++sub_sub_set) {
           
             if (sub_sub_set < num_sub_subsets) {
 
@@ -87,9 +94,11 @@ __global__ void DW_Decimal_kernel(CsrGraph* graph, unsigned int* DP, unsigned in
                 
                 if (subset != subSubset) {
 
-                    unsigned int ss_index = getSubsetIndexDecimal(subSubset, allSubsets);
+                    unsigned int ss_index = getSubsetIndexDecimal(subSubset, allSubsets, numSubsets);
+                    
                     unsigned int sMinusSS = subset  & (~subSubset);
-                    unsigned int sMinusSS_index = getSubsetIndexDecimal(sMinusSS, allSubsets);
+                    
+                    unsigned int sMinusSS_index = getSubsetIndexDecimal(sMinusSS, allSubsets, numSubsets);
 
                     for(unsigned int vertex = 0; vertex < graph->num_nodes; ++vertex) {
 
@@ -100,7 +109,7 @@ __global__ void DW_Decimal_kernel(CsrGraph* graph, unsigned int* DP, unsigned in
                         if (v_to_sub_Subset != UINT_MAX && v_S_minusSS != UINT_MAX && root_to_v != UINT_MAX) {
 
                             unsigned int sum = v_to_sub_Subset + v_S_minusSS + root_to_v;
-                           
+                            
                             if (sum < threadMin) {
                                 threadMin = sum;
                             }
@@ -110,7 +119,6 @@ __global__ void DW_Decimal_kernel(CsrGraph* graph, unsigned int* DP, unsigned in
             }
         }
     }
-    
     atomicMin( &DP[root * numSubsets + blockIdx.y + subsetsDoneSoFar], threadMin);
 }
 
@@ -118,6 +126,11 @@ void DrayfusWagnerDecimalsGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int
     Timer timer; cudaError_t err;
 
     unsigned int* allSubsets = getSortedSubsetsDecimal(numTerminals);
+    //print all subsets
+    // for(unsigned int i = 0; i < (1 << numTerminals) - 1; ++i) {
+    //    printf("%d ", allSubsets[i]);
+    // }
+    // printf("\n");
     unsigned int *DP_d, *apsp_d, *allSubsets_d;
     unsigned int numSubsets = (1 << numTerminals) - 1;
 
@@ -125,6 +138,7 @@ void DrayfusWagnerDecimalsGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int
       DP[i] = UINT_MAX;
 
     handleSingletons(DP, apsp, allSubsets, numTerminals, graph_cpu->num_nodes, terminals);
+
 
     startTime(&timer);
 
@@ -146,7 +160,7 @@ void DrayfusWagnerDecimalsGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int
     cudaMemcpy(DP_d, DP, sizeof(unsigned int) * graph_cpu->num_nodes * numSubsets, cudaMemcpyHostToDevice);
     cudaMemcpy(apsp_d, apsp, sizeof(unsigned int) * graph_cpu->num_nodes * graph_cpu->num_nodes, cudaMemcpyHostToDevice);
     cudaMemcpy(allSubsets_d, allSubsets, sizeof(unsigned int) * numSubsets , cudaMemcpyHostToDevice);
-
+   
     err = cudaGetLastError();
     if (err != cudaSuccess) 
         printf("Copy Error: %s\n", cudaGetErrorString(err));
@@ -174,18 +188,16 @@ void DrayfusWagnerDecimalsGPU(CsrGraph* graph_cpu, CsrGraph* graph, unsigned int
 
         dim3 numBlocks (graph_cpu->num_nodes, currSubsetNum);
         
-        unsigned int sharedMemPerBlock = ((1 << k) - 1) * sizeof(unsigned int);
-
-        DW_Decimal_kernel<<<numBlocks, numThreads, sharedMemPerBlock>>> (graph, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
+        DW_Decimal_kernel<<<numBlocks, numThreads>>> (graph, DP_d, apsp_d, allSubsets_d, numSubsets, coarseFactor, k, subsetsDoneSoFar);
         
         err = cudaGetLastError();
         if (err != cudaSuccess) 
             printf("Kernel Error: %s in launch num: %u and subsetsSoFar: %u\n", cudaGetErrorString(err), k - 1, subsetsDoneSoFar);
-            
-        cudaDeviceSynchronize();
+        
         subsetsDoneSoFar += currSubsetNum;
+        cudaDeviceSynchronize();
     }
-    cudaDeviceSynchronize();
+
     stopTime(&timer);
     printElapsedTime(timer, "Kernel time: ", GREEN);
 
