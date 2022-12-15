@@ -70,7 +70,7 @@ __global__ void DW_kernel_o4(CsrGraph* graph, unsigned int numTerminals, unsigne
                     for(unsigned int vertex = 0; vertex < graph->num_nodes; ++vertex) {
 
                         unsigned int v_to_sub_Subset = DP[vertex * numSubsets + ss_index];
-                        unsigned int v_S_minusSS = DP[vertex* numSubsets + sMinusSS_index]; 
+                        unsigned int v_S_minusSS = DP[vertex * numSubsets + sMinusSS_index]; 
                         unsigned int root_to_v = apsp[root * graph->num_nodes + vertex]; 
                         
 

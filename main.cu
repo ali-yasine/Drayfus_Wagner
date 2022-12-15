@@ -151,6 +151,17 @@ int main(int argc, char** argv) {
   if (runCPU)
     verify(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
 
+  //OPT 5
+  startTime(&timer);
+
+  DrayfusWagnerDecimalsGPU(graph, graph_d, numberOfTerminals, terminals, DP, apsp);
+
+  stopTime(&timer);
+
+  printElapsedTime(timer, "GPU opt5 time", CYAN);
+  if (runCPU)
+    verify(cpuResult, DP, graph->num_nodes, ((1 << numberOfTerminals) - 1));
+  
   free(apsp);
   free(DP);
   free(terminals);

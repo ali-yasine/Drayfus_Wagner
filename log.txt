@@ -1,0 +1,337 @@
+========= COMPUTE-SANITIZER
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (0,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (1,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (2,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (3,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (4,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (5,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (6,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (7,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (8,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Invalid __shared__ write of size 4 bytes
+=========     at 0x260 in DW_Decimal_kernel(CsrGraph *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int)
+=========     by thread (0,0,0) in block (9,0,0)
+=========     Address 0x1c is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x2ea4a1]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:__cudart808 [0x16e6b]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:cudaLaunchKernel [0x72608]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xc0e5]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaDeviceSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaDeviceSynchronize [0x4d287]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbd8c]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaDeviceSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaDeviceSynchronize [0x4d287]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbd9e]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaMemcpy.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaMemcpy [0x6d985]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbe63]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaGetLastError.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaGetLastError [0x4fa14]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbe68]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaDeviceSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaDeviceSynchronize [0x4d287]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbe87]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaFree.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaFree [0x57bee]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbf0d]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaFree.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaFree [0x57bee]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbf1a]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaFree.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaFree [0x57bee]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbf27]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaDeviceSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x424d26]
+=========                in /lib64/libcuda.so.1
+=========     Host Frame:cudaDeviceSynchronize [0x4d287]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:DrayfusWagnerDecimalsGPU(CsrGraph*, CsrGraph*, unsigned int, unsigned int*, unsigned int*, unsigned int*) [0xbf2c]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:main [0x4293]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+=========     Host Frame:__libc_start_main [0x223d5]
+=========                in /lib64/libc.so.6
+=========     Host Frame: [0x4dbe]
+=========                in /scratch/7933961-aay22/Drayfus_Wagner/./dw
+========= 
+========= ERROR SUMMARY: 19 errors

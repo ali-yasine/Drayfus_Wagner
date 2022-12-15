@@ -49,7 +49,7 @@ __device__ __host__ static unsigned int choose(unsigned int n, unsigned int k){
     return result;
 }
 
-__host__ static unsigned int* setDifference(unsigned int* set1, unsigned int* set2, unsigned int size){
+__host__ __device__ static unsigned int* setDifference(unsigned int* set1, unsigned int* set2, unsigned int size){
     unsigned int* set1MinusSet2 = (unsigned int*) malloc(size * sizeof(unsigned int));
 
     for (unsigned int i = 0; i < size; i++){
