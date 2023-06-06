@@ -1,6 +1,26 @@
-Compile using make then run the executable and optionally pass it the size of the graph(300 is default) and the number of terminals(8 is default)
-3rd optional parameter is choosing to run the algorithm on cpu or not (1 or 0 default is 1)
+GPU Parallelized Dreyfus-Wagner Algorithm
+This repository contains an implementation of a GPU parallelized Dreyfus-Wagner algorithm. The algorithm is based on the original Dreyfus-Wagner algorithm and has been optimized to leverage the power of GPUs, providing significant performance improvements.
 
-example: ./dw 400 10 
-         ./dw 2500 8 0 (doesn't run on cpu) 
-         
+
+Introduction:
+The Dreyfus–Wagner algorithm is a well-known dynamic programming method for computing the exact minimum Steiner trees in general weighted graphs. As this problem was proven to be NP-complete, this implementation aims to utilize the GPU and its parallelization potential to get results for decently sized graphs in reasonable time.
+
+Installation
+To use the GPU parallelized Dreyfus-Wagner algorithm, you need to have the following dependencies installed:
+
+CUDA Toolkit
+[C++ compiler with C++11 support]
+
+Follow these steps to install and compile the algorithm:
+
+Clone this repository: git clone https://github.com/ali-yasine/Drayfus_Wagner.git
+Navigate to the project directory: cd Drayfus_Wagner
+Compile the algorithm using the make command: make
+
+To run the GPU parallelized Dreyfus-Wagner algorithm, follow these steps:
+
+After compiling the algorithm, execute the generated executable file: ./dw
+Optionally, you can provide additional parameters:
+Size of the graph (default: 300): ./dw 400
+Number of terminal vertices (ones which must be included in the steiner tree) (default: 8): ./dw 400 10
+Choose whether to run the algorithm on CPU or GPU (default: 1 [GPU]): ./dw 400 10 0
